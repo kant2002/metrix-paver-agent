@@ -1,4 +1,4 @@
-var sys = require('sys')
+var util = require('util')
 var exec = require('child_process').exec;
 var child;
 
@@ -13,11 +13,11 @@ var aliveText="alive!";
 var elapsed=0;
 setInterval(function(){
 elapsed++;
-//console.log("time is "+ elapsed);
-if (elapsed>30){
-  console.log("shutdowning");
-  shutdown();
-}
+  //console.log("time is "+ elapsed);
+  if (elapsed>30){
+    console.log("shutdowning");
+    shutdown();
+  }
 }, 1000);
 
 var serialLib =require("serialport");
