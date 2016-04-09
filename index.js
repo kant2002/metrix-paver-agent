@@ -39,21 +39,21 @@ crawlerHead.on("change", function(val) {
    if(val == 1){
      if(crawlerTail.value == 0){
        distance += crawlerSpace/4;
-       console.log('>>> ', distance);
+       console.log('>>>1 ', distance);
      }
      else{
        distance -= crawlerSpace/4;
-       console.log('<<< ', distance);
+       console.log('<<<1 ', distance);
      }
    }
    else {
      if(crawlerTail.value == 0){
        distance -= crawlerSpace/4;
-       console.log('<<< ', distance);
+       console.log('<<<2 ', distance);
      }
      else{
        distance += crawlerSpace/4;
-       console.log('>>> ', distance);
+       console.log('>>>2 ', distance);
      }
    }
 
@@ -81,21 +81,21 @@ crawlerTail.on("change", function(val) {
    if(val == 0){
      if(crawlerHead.value == 0){
        distance += crawlerSpace/4;
-       console.log('>>> ', distance);
+       console.log('>>>3 ', distance);
      }
      else{
        distance -= crawlerSpace/4;
-       console.log('<<< ', distance);
+       console.log('<<<3 ', distance);
      }
    }
    else {
      if(crawlerHead.value == 0){
        distance -= crawlerSpace/4;
-       console.log('<<< ', distance);
+       console.log('<<<4 ', distance);
      }
      else{
        distance += crawlerSpace/4;
-       console.log('>>> ', distance);
+       console.log('>>>4 ', distance);
      }
    }
 
