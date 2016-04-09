@@ -2,20 +2,33 @@ var gpio = require('gpio');
 
 
 
-var dowelGear  = 29; // GPIO 5
-var dowelExist = 31; // GPIO 6
-var dowelDip   = 27; // GPIO 26
 
 var crawlerSpace = 10;
 
-var cArr = [];
-
-var cHead = 0;
-var cTail = 0;
-
-
 var positionFault = true;
 var distance = 0;
+
+
+var dowelExist = gpio.export(6, { // PIN 31
+   direction: "in",
+   ready: function() {
+     console.log('ready');
+   }
+});
+
+var dowelGear = gpio.export(5, { // PIN 29
+   direction: "in",
+   ready: function() {
+     console.log('ready');
+   }
+});
+
+var dowelDip = gpio.export(26, { // PIN 27
+   direction: "in",
+   ready: function() {
+     console.log('ready');
+   }
+});
 
 var crawlerHead = gpio.export(13, { // PIN 33
    direction: "in",
@@ -34,6 +47,18 @@ var crawlerTail = gpio.export(19, { // PIN 35
 });
 
 
+
+dowelExist.on("change", function(val){
+  console.log('dowelExist', val);
+});
+
+dowelGear.on("change", function(val){
+  console.log('dowelGear', val);
+});
+
+dowelDip.on("change", function(val){
+  console.log('dowelDip', val);
+});
 
 
 crawlerHead.on("change", function(val) {
