@@ -19,6 +19,7 @@ var distance = 0;
 var crawlerHead = gpio.export(13, { // PIN 33
    direction: "in",
    ready: function() {
+     crawlerHead.set();
      console.log('ready', crawlerHead.value);
    }
 });
@@ -26,6 +27,7 @@ var crawlerHead = gpio.export(13, { // PIN 33
 var crawlerTail = gpio.export(19, { // PIN 35
    direction: "in",
    ready: function() {
+     crawlerTail.set();
      console.log('ready', crawlerTail.value);
    }
 });
