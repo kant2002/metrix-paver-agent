@@ -1,4 +1,4 @@
-var gpio = require('rpi-gpio');
+var gpio = require('gpio');
 
 
 
@@ -8,7 +8,15 @@ var dowelDip   = 27; // GPIO 26
 var caterpillarHead = 33; //GPIO 13
 var caterpillarTail = 35; //GPIO 19
 
-gpio.on('change', function(channel, value) {
-    console.log('Channel ' + channel + ' value is now ' + value);
+var gpio4 = gpio.export(35, {
+   direction: "in",
+   ready: function() {
+     console.log('ready');
+   }
 });
-gpio.setup(caterpillarHead, gpio.DIR_IN, gpio.EDGE_BOTH);
+
+
+gpio4.on("change", function(val) {
+   // value will report either 1 or 0 (number) when the value changes
+   console.log(--, val)
+});
