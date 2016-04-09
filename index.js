@@ -5,10 +5,22 @@ var gpio = require('gpio');
 var dowelGear  = 29; // GPIO 5
 var dowelExist = 31; // GPIO 6
 var dowelDip   = 27; // GPIO 26
-var caterpillarHead = 33; //GPIO 13
-var caterpillarTail = 35; //GPIO 19
 
-var gpio4 = gpio.export(35, {
+var crawlerLength = 10;
+
+var cArr = [];
+
+var cHead = 0;
+var cTail = 0;
+
+var crawlerHead = gpio.export(13, { // PIN 33
+   direction: "in",
+   ready: function() {
+     console.log('ready');
+   }
+});
+
+var crawlerTail = gpio.export(19, { // PIN 35
    direction: "in",
    ready: function() {
      console.log('ready');
@@ -16,7 +28,45 @@ var gpio4 = gpio.export(35, {
 });
 
 
-gpio4.on("change", function(val) {
+
+
+crawlerHead.on("change", function(val) {
    // value will report either 1 or 0 (number) when the value changes
-   console.log('--', val)
+
+   if(val == 1){
+     if(cHead == 0) cHead = 1;
+     else {
+       if(cHead == 1){
+         console.log('step forward | ', crawlerTail.value);
+       }
+       else {
+         console.log('step backward | ', crawlerTail.value);
+       }
+      cHead = 0;
+     }
+   }
+
+
+
+});
+
+crawlerTail.on("change", function(val) {
+   // value will report either 1 or 0 (number) when the value changes
+
+   if(val == 1){
+     if(cHead == 0) cHead = 2;
+     else {
+       if(cHead == 1){
+         console.log('step forward | ', crawlerHead.value);
+       }
+       else {
+        console.log('step backward | ', crawlerHead.value); 
+       }
+       cHead = 0;
+     }
+   }
+
+
+
+
 });
