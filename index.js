@@ -18,5 +18,5 @@ var gpio4 = gpio.export(35, {
 
 gpio4.on("change", function(val) {
    // value will report either 1 or 0 (number) when the value changes
-   console.log(--, val)
+   console.log('--', val)
 });
