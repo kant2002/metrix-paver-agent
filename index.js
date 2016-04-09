@@ -6,12 +6,15 @@ var dowelGear  = 29; // GPIO 5
 var dowelExist = 31; // GPIO 6
 var dowelDip   = 27; // GPIO 26
 
-var crawlerLength = 10;
+var crawlerSpace = 10;
 
 var cArr = [];
 
 var cHead = 0;
 var cTail = 0;
+
+
+var distance = 0;
 
 var crawlerHead = gpio.export(13, { // PIN 33
    direction: "in",
@@ -35,18 +38,22 @@ crawlerHead.on("change", function(val) {
 
    if(val == 1){
      if(crawlerTail.value == 0){
-       console.log('Forward');
+       distance += crawlerSpace/4;
+       console.log('>>> ', distance);
      }
      else{
-       console.log('Reverse');
+       distance -= crawlerSpace/4;
+       console.log('<<< ', distance);
      }
    }
    else {
      if(crawlerTail.value == 0){
-       console.log('Reverse');
+       distance -= crawlerSpace/4;
+       console.log('<<< ', distance);
      }
      else{
-       console.log('Forward');
+       distance += crawlerSpace/4;
+       console.log('>>> ', distance);
      }
    }
 
@@ -73,18 +80,22 @@ crawlerTail.on("change", function(val) {
 
    if(val == 0){
      if(crawlerHead.value == 0){
-       console.log('Forward');
+       distance += crawlerSpace/4;
+       console.log('>>> ', distance);
      }
      else{
-       console.log('Reverse');
+       distance -= crawlerSpace/4;
+       console.log('<<< ', distance);
      }
    }
    else {
      if(crawlerHead.value == 0){
-       console.log('Reverse');
+       distance -= crawlerSpace/4;
+       console.log('<<< ', distance);
      }
      else{
-       console.log('Forward');
+       distance += crawlerSpace/4;
+       console.log('>>> ', distance);
      }
    }
 
