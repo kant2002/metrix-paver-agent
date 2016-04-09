@@ -33,10 +33,7 @@ nanoPort.open(function (error) {
     console.log('failed to open: '+error);
   }
   console.log('opened port Nano');
-  //inform ardunio that i'm alive
-  setInterval(sendAlive,5000);
-
-
+  setInterval(sendAlive, 1000);
   nanoPort.on('data', function(data) {
     if (data==aliveText){
       console.log('a: ', new Date());
