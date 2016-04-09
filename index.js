@@ -14,6 +14,7 @@ var cHead = 0;
 var cTail = 0;
 
 
+var positionFault = true;
 var distance = 0;
 
 var crawlerHead = gpio.export(13, { // PIN 33
@@ -37,6 +38,10 @@ var crawlerTail = gpio.export(19, { // PIN 35
 
 crawlerHead.on("change", function(val) {
    // value will report either 1 or 0 (number) when the value changes
+   if(positionFault){
+     positionFault = false;
+     return 0;
+   }
 
    if(val == 1){
      if(crawlerTail.value == 0){
@@ -79,6 +84,11 @@ crawlerHead.on("change", function(val) {
 
 crawlerTail.on("change", function(val) {
    // value will report either 1 or 0 (number) when the value changes
+
+   if(positionFault){
+     positionFault = false;
+     return 0;
+   }
 
    if(val == 0){
      if(crawlerHead.value == 0){
