@@ -39,6 +39,7 @@ nanoPort.open(function (error) {
 
   nanoPort.on('data', function(data) {
     if (data==aliveText){
+      console.log('a: ', new Date());
       //console.log("reset timer");
       elapsed=0;
     }
