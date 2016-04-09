@@ -37,10 +37,10 @@ crawlerHead.on("change", function(val) {
      if(cHead == 0) cHead = 1;
      else {
        if(cHead == 1){
-         console.log('step forward | ', crawlerTail.value);
+         console.log('step stop backward | ', crawlerTail.value);
        }
        else {
-         console.log('step backward | ', crawlerTail.value);
+         console.log('step backward      | ', crawlerTail.value);
        }
       cHead = 0;
      }
@@ -56,11 +56,11 @@ crawlerTail.on("change", function(val) {
    if(val == 1){
      if(cHead == 0) cHead = 2;
      else {
-       if(cHead == 1){
-         console.log('step forward | ', crawlerHead.value);
+       if(cHead == 2){
+         console.log('step stop forward  | ', crawlerHead.value);
        }
        else {
-        console.log('step backward | ', crawlerHead.value); 
+         console.log('step forward       | ', crawlerHead.value); 
        }
        cHead = 0;
      }
