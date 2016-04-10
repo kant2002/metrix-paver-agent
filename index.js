@@ -6,7 +6,10 @@ var gpio = require('gpio');
 var crawlerSpace = 10;
 
 var positionFault = true;
+
 var distance = 0;
+var dowelMap = [];
+var dowelCurrent = 0;
 
 
 var dowelExist = gpio.export(6, { // PIN 31
@@ -49,15 +52,23 @@ var crawlerTail = gpio.export(19, { // PIN 35
 
 
 dowelExist.on("change", function(val){
-  console.log('dowelExist', val);
+  if(val == 0){
+    dowelCurrent = 1;
+  }
 });
 
 dowelGear.on("change", function(val){
-  console.log('dowelGear', val);
+  if(val == 0){
+    dowelMap.push(dowelCurrent);
+    dowelCurrent = 0;
+  }
 });
 
 dowelDip.on("change", function(val){
-  console.log('dowelDip', val);
+  if(val == 0){
+    console.log('Distance: ', distance);
+    console.log('Dowels:   ', dowelMap);
+  }
 });
 
 
