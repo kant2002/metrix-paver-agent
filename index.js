@@ -8,7 +8,7 @@ var crawlerSpace = 10;
 var positionFault = true;
 
 var distance = 0;
-var dowelMap = [];
+var dowelMap = '';
 var dowelCurrent = 0;
 
 
@@ -59,7 +59,7 @@ dowelExist.on("change", function(val){
 
 dowelGear.on("change", function(val){
   if(val == 0){
-    dowelMap.push(dowelCurrent);
+    dowelMap += dowelCurrent;
     dowelCurrent = 0;
   }
 });
