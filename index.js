@@ -1,9 +1,16 @@
 require('dotenv').load();
-var mysql  = require('promise-mysql');
+var mysql  = require('mysql');
 var gpio   = require('gpio');
 var axios  = require("axios");
 
-var DB;
+var DB = mysql.createConnection({
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME
+});
+
 var crawlerSpace = 10;
 
 var positionFault = true;
@@ -132,16 +139,7 @@ crawlerTail.on("change", function(val) {
    }
 });
 
-
-mysql.createConnection({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME
-}).then(function(connection){
-  DB = connection;
-  // return DB.query('SELECT * FROM yield ORDER BY id DESC LIMIT 1');
-}).catch(function(err){
-  console.log('ERROR: ', err);
+connection.query('SELECT * from paverTrace', function(err, rows) {
+  consoel.log('--',rows)
+  // connected! (unless `err` is set)
 });
