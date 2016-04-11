@@ -72,6 +72,7 @@ dowelExist.on("change", function(val){
 
 dowelGear.on("change", function(val){
   if(val == 0){
+    console.log('dowel: ',dowelCurrent);
     record.dowelMap += dowelCurrent;
     dowelCurrent = 0;
   }
@@ -92,6 +93,8 @@ dowelDip.on("change", function(val){
         startTime: null,
         finishTime: null
       };
+
+      console.log('RECORD SAVED!');
       // lastRecord = record;
       // oldTime = record.actualDate;
       // wait();
@@ -113,21 +116,21 @@ crawlerHead.on("change", function(val) {
    if(val == 1){
      if(crawlerTail.value == 0){
        record.distance += crawlerSpace/4;
-       console.log('>>>1 ', record.distance);
+       console.log('>>> ', record.distance);
      }
      else{
        record.distance -= crawlerSpace/4;
-       console.log('<<<1 ', record.distance);
+       console.log('<<< ', record.distance);
      }
    }
    else {
      if(crawlerTail.value == 0){
        record.distance -= crawlerSpace/4;
-       console.log('<<<2 ', record.distance);
+       console.log('<<< ', record.distance);
      }
      else{
        record.distance += crawlerSpace/4;
-       console.log('>>>2 ', record.distance);
+       console.log('>>> ', record.distance);
      }
    }
 });
@@ -145,21 +148,21 @@ crawlerTail.on("change", function(val) {
    if(val == 0){
      if(crawlerHead.value == 0){
        record.distance += crawlerSpace/4;
-       console.log('>>>3 ', record.distance);
+       console.log('>>> ', record.distance);
      }
      else{
        record.distance -= crawlerSpace/4;
-       console.log('<<<3 ', record.distance);
+       console.log('<<< ', record.distance);
      }
    }
    else {
      if(crawlerHead.value == 0){
        record.distance -= crawlerSpace/4;
-       console.log('<<<4 ', record.distance);
+       console.log('<<< ', record.distance);
      }
      else{
        record.distance += crawlerSpace/4;
-       console.log('>>>4 ', record.distance);
+       console.log('>>> ', record.distance);
      }
    }
 });
