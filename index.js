@@ -19,14 +19,21 @@ var port = new serialport.SerialPort('/dev/ttyACM0', {
 
 var nmea_codes = ['GGA', 'GLL'];
 
+var nmea_codes_arr = [];
+
 port.on('data', function(line) {
   try {
     // console.log('NMEA:', nmea.parse(line));
     var gis = nmea.parse(line);
+
+    if(nmea_codes_arr.indexOf(gis.sentence) > -1){
+      nmea_codes_arr.push(gis.sentence);
+    }
+
     if(nmea_codes.indexOf(gis.sentence) > -1){
+      console.log(gis.sentence, '--------------------------');
       console.log('lat:', gis.lat);
       console.log('lon:', gis.lon);
-      console.log('-------------');
     }
 
 
@@ -34,6 +41,11 @@ port.on('data', function(line) {
       console.log('err', e);
   }
 });
+
+setInterval(function(){
+  console.log('NMEA CODES: ', nmea_codes_arr);
+},5000);
+
 
 var crawlerSpace = 10; //constant
 var positionFault = true;
