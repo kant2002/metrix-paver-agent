@@ -140,6 +140,6 @@ crawlerTail.on("change", function(val) {
 });
 
 DB.query('SELECT * from paverTrace', function(err, rows) {
-  consoel.log('--',rows)
+  console.log('--',rows)
   // connected! (unless `err` is set)
 });
