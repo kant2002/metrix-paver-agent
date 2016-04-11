@@ -1,5 +1,5 @@
 require('dotenv').load();
-var mysql  = require('mysql');
+var mysql  = require('promise-mysql');
 var gpio   = require('gpio');
 var axios  = require("axios");
 
@@ -131,9 +131,6 @@ crawlerTail.on("change", function(val) {
      }
    }
 });
-
-
-
 
 
 mysql.createConnection({
