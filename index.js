@@ -1,8 +1,9 @@
-var gpio = require('gpio');
+require('dotenv').load();
+var mysql  = require('mysql');
+var gpio   = require('gpio');
+var axios  = require("axios");
 
-
-
-
+var DB;
 var crawlerSpace = 10;
 
 var positionFault = true;
@@ -99,23 +100,6 @@ crawlerHead.on("change", function(val) {
        console.log('>>>2 ', distance);
      }
    }
-
-
-  //  if(val == 1){
-  //    if(cHead == 0) cHead = 1;
-  //    else {
-  //      if(cHead == 1){
-  //        console.log('step stop backward | ', crawlerTail.value);
-  //      }
-  //      else {
-  //        console.log('step backward      | ', crawlerTail.value);
-  //      }
-  //     cHead = 0;
-  //    }
-  //  }
-
-
-
 });
 
 crawlerTail.on("change", function(val) {
@@ -146,21 +130,21 @@ crawlerTail.on("change", function(val) {
        console.log('>>>4 ', distance);
      }
    }
-
-  //  if(val == 1){
-  //    if(cHead == 0) cHead = 2;
-  //    else {
-  //      if(cHead == 2){
-  //        console.log('step stop forward  | ', crawlerHead.value);
-  //      }
-  //      else {
-  //        console.log('step forward       | ', crawlerHead.value);
-  //      }
-  //      cHead = 0;
-  //    }
-  //  }
+});
 
 
 
 
+
+mysql.createConnection({
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME
+}).then(function(connection){
+  DB = connection;
+  // return DB.query('SELECT * FROM yield ORDER BY id DESC LIMIT 1');
+}).catch(function(err){
+  console.log('ERROR: ', err);
 });
