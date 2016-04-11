@@ -18,7 +18,11 @@ var port = new serialport.SerialPort('/dev/ttyACM0', {
                 parser: serialport.parsers.readline('\r\n')});
 
 port.on('data', function(line) {
+  try {
     console.log('NMEA:', nmea.parse(line));
+  } catch (e) {
+      console.log('err');
+  }
 });
 
 var crawlerSpace = 10; //constant
