@@ -11,12 +11,17 @@ var DB = mysql.createConnection({
   database: process.env.DB_NAME
 });
 
-var crawlerSpace = 10;
-
+var crawlerSpace = 10; //constant
 var positionFault = true;
 
-var distance = 0;
-var dowelMap = '';
+var record = {
+  distance: 0,
+  dowelMap: '',
+  latitude: 0,
+  longitude: 0,
+  startTime: null,
+  finishTime: null
+};
 var dowelCurrent = 0;
 
 
@@ -67,15 +72,31 @@ dowelExist.on("change", function(val){
 
 dowelGear.on("change", function(val){
   if(val == 0){
-    dowelMap += dowelCurrent;
+    record.dowelMap += dowelCurrent;
     dowelCurrent = 0;
   }
 });
 
 dowelDip.on("change", function(val){
   if(val == 0){
-    console.log('Distance: ', distance);
-    console.log('Dowels:   ', dowelMap);
+    console.log('Distance: ', record.distance);
+    console.log('Dowels:   ', record.dowelMap);
+    record.finishTime = new Date();
+    DB.query('INSERT INTO paverTrace SET ?', record).then(function(err, rows){
+      console.log(err, rows);
+      record = {
+        distance: 0,
+        dowelMap: '',
+        latitude: 0,
+        longitude: 0,
+        startTime: null,
+        finishTime: null
+      };
+      // lastRecord = record;
+      // oldTime = record.actualDate;
+      // wait();
+    })
+
   }
 });
 
@@ -87,24 +108,26 @@ crawlerHead.on("change", function(val) {
      return 0;
    }
 
+   if(!record.startTime) record.startTime = new Date();
+
    if(val == 1){
      if(crawlerTail.value == 0){
-       distance += crawlerSpace/4;
-       console.log('>>>1 ', distance);
+       record.distance += crawlerSpace/4;
+       console.log('>>>1 ', record.distance);
      }
      else{
-       distance -= crawlerSpace/4;
-       console.log('<<<1 ', distance);
+       record.distance -= crawlerSpace/4;
+       console.log('<<<1 ', record.distance);
      }
    }
    else {
      if(crawlerTail.value == 0){
-       distance -= crawlerSpace/4;
-       console.log('<<<2 ', distance);
+       record.distance -= crawlerSpace/4;
+       console.log('<<<2 ', record.distance);
      }
      else{
-       distance += crawlerSpace/4;
-       console.log('>>>2 ', distance);
+       record.distance += crawlerSpace/4;
+       console.log('>>>2 ', record.distance);
      }
    }
 });
@@ -117,24 +140,26 @@ crawlerTail.on("change", function(val) {
      return 0;
    }
 
+   if(!record.startTime) record.startTime = new Date();
+
    if(val == 0){
      if(crawlerHead.value == 0){
-       distance += crawlerSpace/4;
-       console.log('>>>3 ', distance);
+       record.distance += crawlerSpace/4;
+       console.log('>>>3 ', record.distance);
      }
      else{
-       distance -= crawlerSpace/4;
-       console.log('<<<3 ', distance);
+       record.distance -= crawlerSpace/4;
+       console.log('<<<3 ', record.distance);
      }
    }
    else {
      if(crawlerHead.value == 0){
-       distance -= crawlerSpace/4;
-       console.log('<<<4 ', distance);
+       record.distance -= crawlerSpace/4;
+       console.log('<<<4 ', record.distance);
      }
      else{
-       distance += crawlerSpace/4;
-       console.log('>>>4 ', distance);
+       record.distance += crawlerSpace/4;
+       console.log('>>>4 ', record.distance);
      }
    }
 });
