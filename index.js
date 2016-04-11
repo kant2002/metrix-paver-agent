@@ -139,7 +139,7 @@ crawlerTail.on("change", function(val) {
    }
 });
 
-connection.query('SELECT * from paverTrace', function(err, rows) {
+DB.query('SELECT * from paverTrace', function(err, rows) {
   consoel.log('--',rows)
   // connected! (unless `err` is set)
 });
