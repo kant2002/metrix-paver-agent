@@ -1,7 +1,9 @@
 require('dotenv').load();
 var mysql  = require('mysql');
 var gpio   = require('gpio');
-var axios  = require("axios");
+var axios  =    require("axios");
+var serialport = require('serialport');
+var nmea = require('nmea');
 
 var DB = mysql.createConnection({
   host: process.env.DB_HOST || 'localhost',
@@ -9,6 +11,14 @@ var DB = mysql.createConnection({
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME
+});
+
+var port = new serialport.SerialPort('/dev/ttyACM0', {
+                baudrate: 9600,
+                parser: serialport.parsers.readline('\r\n')});
+
+port.on('data', function(line) {
+    console.log('NMEA:', nmea.parse(line));
 });
 
 var crawlerSpace = 10; //constant
