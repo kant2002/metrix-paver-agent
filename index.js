@@ -34,6 +34,10 @@ port.on('data', function(line) {
       console.log(gis.sentence, '--------------------------');
       console.log('lat:', gis.lat);
       console.log('lon:', gis.lon);
+      if(gis.type) console.log('type:' gis.type);
+      if(gis.fixType) console.log('fix-type:' gis.fixType);
+      if(gis.status) console.log('status', gis.status);
+
     }
 
 
