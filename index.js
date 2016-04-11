@@ -17,11 +17,21 @@ var port = new serialport.SerialPort('/dev/ttyACM0', {
                 baudrate: 9600,
                 parser: serialport.parsers.readline('\r\n')});
 
+var nmea_codes = ['GGA', 'GLL'];
+
 port.on('data', function(line) {
   try {
-    console.log('NMEA:', nmea.parse(line));
+    // console.log('NMEA:', nmea.parse(line));
+    var gis = nmea.parse(line);
+    if(nmea_codes.indexOf(gis.sentence) > -1){
+      console.log('lat:', gis.lat);
+      console.log('lon:', gis.lon);
+      console.log('-------------');
+    }
+
+
   } catch (e) {
-      console.log('err');
+      console.log('err', e);
   }
 });
 
