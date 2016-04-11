@@ -26,7 +26,7 @@ port.on('data', function(line) {
     // console.log('NMEA:', nmea.parse(line));
     var gis = nmea.parse(line);
 
-    if(nmea_codes_arr.indexOf(gis.sentence) > -1){
+    if(nmea_codes_arr.indexOf(gis.sentence) == -1){
       nmea_codes_arr.push(gis.sentence);
     }
 
@@ -44,6 +44,7 @@ port.on('data', function(line) {
 
 setInterval(function(){
   console.log('NMEA CODES: ', nmea_codes_arr);
+
 },5000);
 
 
