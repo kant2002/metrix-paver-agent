@@ -133,7 +133,7 @@ dowelDip.on("change", function(val){
     console.log('Dowels:   ', record.dowelMap);
     record.finishTime = new Date();
     redisCli.get('dist', function(err, reply){
-      record = parseInt(reply)*cRadius;
+      record = Math.round(parseInt(reply)*cRadius,2);
       DB.query('INSERT INTO paverTrace SET ?', record, function(err, rows){
         console.log(err, rows);
         record = {
