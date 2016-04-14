@@ -106,7 +106,9 @@ var dowelDip = gpio.export(26, { // PIN 27
 
 
 setInterval(function(){
-  console.log('--', redisCli.get('dist'));
+  redisCli.get('dist', function(err, reply){
+    console.log('--', reply);
+  });
 }, 1000);
 
 
