@@ -17,33 +17,33 @@ rd.set('dist', 0)
 def head_gpio(channel):
     if GPIO.input(13):
         if GPIO.input(19) == 0:
-            rd.set('dist', rd.get('dist')+1)
+            rd.set('dist', int(rd.get('dist'))+1)
             print rd.get('dist')
         else:
-            rd.set('dist', rd.get('dist')-1)
+            rd.set('dist', int(rd.get('dist'))-1)
             print rd.get('dist')
     else:
         if GPIO.input(19) == 0:
-            rd.set('dist', rd.get('dist')-1)
+            rd.set('dist', int(rd.get('dist'))-1)
             print rd.get('dist')
         else:
-            rd.set('dist', rd.get('dist')+1)
+            rd.set('dist', int(rd.get('dist'))+1)
             print rd.get('dist')
 
 def tail_gpio(channel):
     if GPIO.input(19):
         if GPIO.input(13) == 0:
-            rd.set('dist', rd.get('dist')-1)
+            rd.set('dist', int(rd.get('dist'))-1)
             print rd.get('dist')
         else:
-            rd.set('dist', rd.get('dist')+1)
+            rd.set('dist', int(rd.get('dist'))+1)
             print rd.get('dist')
     else:
         if GPIO.input(13) == 0:
-            rd.set('dist', rd.get('dist')+1)
+            rd.set('dist', int(rd.get('dist'))+1)
             print rd.get('dist')
         else:
-            rd.set('dist', rd.get('dist')-1)
+            rd.set('dist', int(rd.get('dist'))-1)
             print rd.get('dist')
 
 
