@@ -63,11 +63,11 @@ def tail_gpio(channel):
 GPIO.add_event_detect(13, GPIO.BOTH, callback=head_gpio)
 GPIO.add_event_detect(19, GPIO.BOTH, callback=tail_gpio)
 thread=threading.Thread(target=persist)
-thread.start();
+thread.start()
+thread.join()
 # when a falling edge is detected on port 23, regardless of whatever
 # else is happening in the program, the function my_callback2 will be run
 # 'bouncetime=300' includes the bounce control written into interrupts2a.py
 #GPIO.add_event_detect(19, GPIO.RISING, callback=my_callback2)
 
-raw_input("Press Enter when ready\n>")
 GPIO.cleanup()           # clean up GPIO on normal exit
