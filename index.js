@@ -52,7 +52,7 @@ var DB = mysql.createConnection({
 //
 // },5000);
 
-
+var cRadius = 0.22765;
 var crawlerSpace = 10; //constant
 var positionFault = true;
 
@@ -107,7 +107,7 @@ var dowelDip = gpio.export(26, { // PIN 27
 
 setInterval(function(){
   redisCli.get('dist', function(err, reply){
-    console.log('--', reply);
+    console.log('--', parseToInt(reply)*cRadius);
   });
 }, 1000);
 
