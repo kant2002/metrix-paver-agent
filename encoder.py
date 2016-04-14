@@ -19,7 +19,7 @@ def head_rise(channel):
     global head
     head = 1
 
-	if tail == 0:
+    if tail == 0:
         distance-=1
         print distance
     else:
