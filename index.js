@@ -13,43 +13,42 @@ var DB = mysql.createConnection({
   database: process.env.DB_NAME
 });
 
-var port = new serialport.SerialPort('/dev/ttyACM0', {
-                baudrate: 9600,
-                parser: serialport.parsers.readline('\r\n')});
-
-var nmea_codes = ['GGA', 'GLL'];
-
-var nmea_codes_arr = [];
-
-port.on('data', function(line) {
-  try {
-    // console.log('NMEA:', nmea.parse(line));
-    var gis = nmea.parse(line);
-
-    if(nmea_codes_arr.indexOf(gis.sentence) == -1){
-      nmea_codes_arr.push(gis.sentence);
-    }
-
-    if(nmea_codes.indexOf(gis.sentence) > -1){
-      console.log(gis.sentence, '--------------------------');
-      console.log('lat:', gis.lat);
-      console.log('lon:', gis.lon);
-      if(gis.type) console.log('type:', gis.type);
-      if(gis.fixType) console.log('fix-type:', gis.fixType);
-      if(gis.status) console.log('status', gis.status);
-
-    }
-
-
-  } catch (e) {
-      console.log('err', e);
-  }
-});
-
-setInterval(function(){
-  console.log('NMEA CODES: ', nmea_codes_arr);
-
-},5000);
+// var port = new serialport.SerialPort('/dev/ttyACM0', {
+//                 baudrate: 9600,
+//                 parser: serialport.parsers.readline('\r\n')});
+//
+// var nmea_codes = ['GGA', 'GLL'];
+//
+// var nmea_codes_arr = [];
+//
+// port.on('data', function(line) {
+//   try {
+//     // console.log('NMEA:', nmea.parse(line));
+//     var gis = nmea.parse(line);
+//
+//     if(nmea_codes_arr.indexOf(gis.sentence) == -1){
+//       nmea_codes_arr.push(gis.sentence);
+//     }
+//
+//     if(nmea_codes.indexOf(gis.sentence) > -1){
+//       console.log(gis.sentence, '--------------------------');
+//       console.log('lat:', gis.lat);
+//       console.log('lon:', gis.lon);
+//       if(gis.type) console.log('type:', gis.type);
+//       if(gis.fixType) console.log('fix-type:', gis.fixType);
+//       if(gis.status) console.log('status', gis.status);0
+//     }
+//
+//
+//   } catch (e) {
+//       console.log('err', e);
+//   }
+// });
+//
+// setInterval(function(){
+//   console.log('NMEA CODES: ', nmea_codes_arr);
+//
+// },5000);
 
 
 var crawlerSpace = 10; //constant
@@ -157,21 +156,21 @@ crawlerHead.on("change", function(val) {
    if(val == 1){
      if(crawlerTail.value == 0){
        record.distance += crawlerSpace/4;
-       console.log('>>> ', record.distance);
+       console.log('>>>1 ', record.distance);
      }
      else{
        record.distance -= crawlerSpace/4;
-       console.log('<<< ', record.distance);
+       console.log('<<<1 ', record.distance);
      }
    }
    else {
      if(crawlerTail.value == 0){
        record.distance -= crawlerSpace/4;
-       console.log('<<< ', record.distance);
+       console.log('<<<2 ', record.distance);
      }
      else{
        record.distance += crawlerSpace/4;
-       console.log('>>> ', record.distance);
+       console.log('>>>2 ', record.distance);
      }
    }
 });
@@ -189,21 +188,21 @@ crawlerTail.on("change", function(val) {
    if(val == 0){
      if(crawlerHead.value == 0){
        record.distance += crawlerSpace/4;
-       console.log('>>> ', record.distance);
+       console.log('>>>3 ', record.distance);
      }
      else{
        record.distance -= crawlerSpace/4;
-       console.log('<<< ', record.distance);
+       console.log('<<<3 ', record.distance);
      }
    }
    else {
      if(crawlerHead.value == 0){
        record.distance -= crawlerSpace/4;
-       console.log('<<< ', record.distance);
+       console.log('<<<4 ', record.distance);
      }
      else{
        record.distance += crawlerSpace/4;
-       console.log('>>> ', record.distance);
+       console.log('>>>4 ', record.distance);
      }
    }
 });
