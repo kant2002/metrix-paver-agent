@@ -10,41 +10,41 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-distance=0
+
+rd = redis.StrictRedis(host='localhost', port=6379, db=0)
+rd.set('dist', 0)
 
 def head_gpio(channel):
-    global distance
     if GPIO.input(13):
         if GPIO.input(19) == 0:
-            distance+=1
-            print distance
+            rd.set('dist', rd.get('dist')+1)
+            print rd.get('dist')
         else:
-            distance-=1
-            print distance
+            rd.set('dist', rd.get('dist')-1)
+            print rd.get('dist')
     else:
         if GPIO.input(19) == 0:
-            distance-=1
-            print distance
+            rd.set('dist', rd.get('dist')-1)
+            print rd.get('dist')
         else:
-            distance+=1
-            print distance
+            rd.set('dist', rd.get('dist')+1)
+            print rd.get('dist')
 
 def tail_gpio(channel):
-    global distance
     if GPIO.input(19):
         if GPIO.input(13) == 0:
-            distance-=1
-            print distance
+            rd.set('dist', rd.get('dist')-1)
+            print rd.get('dist')
         else:
-            distance+=1
-            print distance
+            rd.set('dist', rd.get('dist')+1)
+            print rd.get('dist')
     else:
         if GPIO.input(13) == 0:
-            distance+=1
-            print distance
+            rd.set('dist', rd.get('dist')+1)
+            print rd.get('dist')
         else:
-            distance-=1
-            print distance
+            rd.set('dist', rd.get('dist')-1)
+            print rd.get('dist')
 
 
 
