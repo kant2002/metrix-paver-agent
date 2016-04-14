@@ -13,7 +13,6 @@ GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 distance=0
-thread=threading.Thread(target=persist)
 
 rd = redis.StrictRedis(host='localhost', port=6379, db=0)
 rd.set('dist', 0)
@@ -63,6 +62,7 @@ def tail_gpio(channel):
 # else is happening in the program, the function my_callback will be run
 GPIO.add_event_detect(13, GPIO.BOTH, callback=head_gpio)
 GPIO.add_event_detect(19, GPIO.BOTH, callback=tail_gpio)
+thread=threading.Thread(target=persist)
 thread.start();
 # when a falling edge is detected on port 23, regardless of whatever
 # else is happening in the program, the function my_callback2 will be run
