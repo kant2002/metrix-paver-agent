@@ -15,7 +15,7 @@ head = 0;
 tail = 0;
 
 def head_rise(channel):
-	global distance
+    global distance
     global head
     head = 1
 
