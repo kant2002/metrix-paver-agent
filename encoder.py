@@ -16,7 +16,8 @@ tail = 0;
 
 def head_rise(channel):
 	global distance
-    global head = 1
+    global head
+    head = 1
 
 	if(tail == 0)
         distance-=1
@@ -27,7 +28,8 @@ def head_rise(channel):
 
 def head_fall(channel):
     global distance
-    global head = 0
+    global head
+    head = 0
     if(tail == 0)
         distance+=1
         print distance
@@ -37,7 +39,8 @@ def head_fall(channel):
 
 def tail_rise(channel):
     global distance
-    global tail = 1
+    global tail
+    tail = 1
     if(head == 0)
         distance+=1
         print distance
@@ -46,7 +49,8 @@ def tail_rise(channel):
         print distance
 def tail_fall(channel):
     global distance
-    global tail = 0
+    global tail
+    tail = 0
     if(head == 0)
         distance-=1
         print distance
