@@ -21,6 +21,7 @@
     "serialport": "^1.7.4",
     "nmea": "^0.0.9",
     "mysql": "^2.10.2",
+    "redis": "^2.6.0",
     "colors": "~1.1.0",
     "console.table": "^0.4.0",
     "cors": "^2.7.1",
