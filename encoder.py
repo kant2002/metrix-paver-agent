@@ -20,41 +20,33 @@ rd.set('dist', 0)
 def persist():
     while 1:
         rd.set('dist',distance)
-        time.sleep(500)
+        time.sleep(0.5)
 
 def head_gpio(channel):
     global distance
     if GPIO.input(13):
         if GPIO.input(19) == 0:
             distance+=1
-            print distance
         else:
             distance-=1
-            print distance
     else:
         if GPIO.input(19) == 0:
             distance-=1
-            print distance
         else:
             distance+=1
-            print distance
 
 def tail_gpio(channel):
     global distance
     if GPIO.input(19):
         if GPIO.input(13) == 0:
             distance-=1
-            print distance
         else:
             distance+=1
-            print distance
     else:
         if GPIO.input(13) == 0:
             distance+=1
-            print distance
         else:
             distance-=1
-            print distance
 
 
 
