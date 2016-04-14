@@ -132,22 +132,24 @@ dowelDip.on("change", function(val){
     console.log('Distance: ', record.distance);
     console.log('Dowels:   ', record.dowelMap);
     record.finishTime = new Date();
-    DB.query('INSERT INTO paverTrace SET ?', record, function(err, rows){
-      console.log(err, rows);
-      record = {
-        distance: 0,
-        dowelMap: '',
-        latitude: 0,
-        longitude: 0,
-        startTime: null,
-        finishTime: null
-      };
-
-      console.log('RECORD SAVED!');
-      // lastRecord = record;
-      // oldTime = record.actualDate;
-      // wait();
+    redisCli.get('dist', function(err, reply){
+      record = parseInt(reply)*cRadius;
+      DB.query('INSERT INTO paverTrace SET ?', record, function(err, rows){
+        console.log(err, rows);
+        record = {
+          distance: 0,
+          dowelMap: '',
+          latitude: 0,
+          longitude: 0,
+          startTime: null,
+          finishTime: null
+        };
+        console.log('RECORD SAVED!');
+        redisCli.set('dist_flush', '1');
+      });
     });
+
+
 
   }
 });

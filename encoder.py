@@ -13,12 +13,18 @@ GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 distance=0
+dis_reset=0
+
 
 rd = redis.StrictRedis(host='localhost', port=6379, db=0)
 rd.set('dist', 0)
 
 def persist():
+    global distance
     while 1:
+        if rd.get('dist_flush') == '1':
+            distance = 0
+            rd.set('dist_flush', '0')
         rd.set('dist',distance)
         time.sleep(0.5)
 
