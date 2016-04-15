@@ -1,10 +1,12 @@
 require('dotenv').load();
-var mysql  = require('mysql');
-var gpio   = require('gpio');
-var axios  =    require("axios");
-var serialport = require('serialport');
-var nmea = require('nmea');
-var redis = require('redis');
+var mysql       = require('mysql');
+var gpio        = require('gpio');
+var axios       = require("axios");
+var serialport  = require('serialport');
+var nmea        = require('nmea');
+var redis       = require('redis');
+var Transmitter = require('./transmitter.js');
+
 var redisCli = redis.createClient();
 
 var DB = mysql.createConnection({
@@ -14,6 +16,15 @@ var DB = mysql.createConnection({
   password: process.env.DB_PASS,
   database: process.env.DB_NAME
 });
+
+
+var transmitter = new Transmitter({
+  remoteOrigin: process.env.REMOTE_ORIGIN || 'http://metrix.kz',
+  deviceId:     process.env.DEVICE_ID,
+  // scopeId:      process.env.DEVICE_ID,
+})
+
+transmitter.sync();
 
 // var port = new serialport.SerialPort('/dev/ttyACM0', {
 //                 baudrate: 9600,
@@ -105,11 +116,11 @@ var dowelDip = gpio.export(26, { // PIN 27
 // });
 
 
-setInterval(function(){
-  redisCli.get('dist', function(err, reply){
-    console.log('--', parseInt(reply)*cRadius);
-  });
-}, 1000);
+// setInterval(function(){
+//   redisCli.get('dist', function(err, reply){
+//     console.log('--', parseInt(reply)*cRadius);
+//   });
+// }, 1000);
 
 
 
@@ -136,6 +147,7 @@ dowelDip.on("change", function(val){
       record.distance = parseInt(reply)*cRadius;
       DB.query('INSERT INTO paverTrace SET ?', record, function(err, rows){
         console.log(err, rows);
+        transmitter.sync(rows);
         record = {
           distance: 0,
           dowelMap: '',
@@ -148,9 +160,6 @@ dowelDip.on("change", function(val){
         redisCli.set('dist_flush', '1');
       });
     });
-
-
-
   }
 });
 
