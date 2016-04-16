@@ -28,16 +28,17 @@ Transmitter.prototype.sync = function(data){
     return 0;
   }
 
-  axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {}).then(function(scope){
-    console.log('SCOPE:', scope);
-    self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [scope.updatedAt], function(err, rows) {
+  axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {}).then(function(response){
+    console.log('SCOPE:', response.data);
+    self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [response.data.updatedAt], function(err, rows) {
       if(err || rows.length == 0){
         console.log('No Data Left:', err);
         this.lastTransmission = new Date();
         self.syncLoop = setTimeout(self.sync, self.syncTimeout);
+        return 0;
       }
       rows.map(function(row){
-        row.scopeId = scope.id;
+        row.scopeId = response.data.id;
       });
       self.postData(rows).then(function(){
         this.lastTransmission = new Date();
