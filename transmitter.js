@@ -19,15 +19,15 @@ Transmitter.prototype.sync = function(data){
     return 0;
   }
 
-  this.getScope.then(function(result){
-    self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [result.lastTime] function(err, rows) {
+  this.getScope.then(function(scope){
+    self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [scope.updatedAt] function(err, rows) {
       if(err || rows.length == 0){
         console.log('err:', err);
         this.lastTransmission = new Date();
         self.syncLoop = setTimeout(self.sync, self.syncTimeout);
       }
       rows.map(function(row){
-        row.scopeId = result.scopeId;
+        row.scopeId = scope.id;
       });
       self.postData(rows).then(function(){
         this.lastTransmission = new Date();
@@ -43,11 +43,7 @@ Transmitter.prototype.sync = function(data){
 
 Transmitter.prototype.getScope = function(){
   var self = this;
-  return axios.get(this.host + 'api/production/paverIndex/?deviceId=' + self.deviceId, {
-      params: {
-          deviceId: self.deviceId,
-      }
-  });
+  return axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {});
 };
 
 Transmitter.prototype.postData = function(data){
