@@ -19,7 +19,7 @@ Transmitter.prototype.sync = function(data){
     return 0;
   }
 
-  this.getScope.then(function(scope){
+  this.getScope().then(function(scope){
     self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [scope.updatedAt], function(err, rows) {
       if(err || rows.length == 0){
         console.log('err:', err);
