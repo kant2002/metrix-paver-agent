@@ -40,7 +40,7 @@ Transmitter.prototype.sync = function(data){
       rows.map(function(row){
         row.scopeId = response.data.id;
       });
-      self.postData(rows).then(function(){
+      self.postData({data:rows}).then(function(){
         this.lastTransmission = new Date();
         self.syncLoop = setTimeout(self.sync, self.syncTimeout);
       })
