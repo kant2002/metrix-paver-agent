@@ -20,7 +20,7 @@ Transmitter.prototype.sync = function(data){
   }
 
   this.getScope.then(function(scope){
-    self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [scope.updatedAt] function(err, rows) {
+    self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [scope.updatedAt], function(err, rows) {
       if(err || rows.length == 0){
         console.log('err:', err);
         this.lastTransmission = new Date();

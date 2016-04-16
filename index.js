@@ -19,7 +19,7 @@ var DB = mysql.createConnection({
 
 
 var transmitter = new Transmitter({
-  remoteOrigin: process.env.REMOTE_ORIGIN || 'http://metrix.kz',
+  remoteOrigin: process.env.REMOTE_ORIGIN || 'http://metrix.kz/',
   deviceId:     process.env.DEVICE_ID,
   // scopeId:      process.env.DEVICE_ID,
 })
