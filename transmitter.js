@@ -43,6 +43,9 @@ Transmitter.prototype.sync = function(data){
       self.postData(rows).then(function(){
         this.lastTransmission = new Date();
         self.syncLoop = setTimeout(self.sync, self.syncTimeout);
+      })
+      .catch(function(error){
+        console.log('transmit error:', error);
       });
     });
   })
