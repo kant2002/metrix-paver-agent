@@ -29,9 +29,10 @@ Transmitter.prototype.sync = function(data){
   }
 
   axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {}).then(function(scope){
+    console.log('SCOPE:', scope);
     self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [scope.updatedAt], function(err, rows) {
       if(err || rows.length == 0){
-        console.log('err:', err);
+        console.log('No Data Left:', err);
         this.lastTransmission = new Date();
         self.syncLoop = setTimeout(self.sync, self.syncTimeout);
       }
@@ -45,7 +46,7 @@ Transmitter.prototype.sync = function(data){
     });
   })
   .catch(function(error){
-    console.log('error:', error);
+    console.log('connection error:', error);
     this.lastTransmission = new Date();
   });
 };
