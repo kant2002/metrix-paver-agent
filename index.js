@@ -5,6 +5,7 @@ var axios       = require("axios");
 var serialport  = require('serialport');
 var nmea        = require('nmea');
 var redis       = require('redis');
+var Promise     = require('es6-promise');
 var Transmitter = require('./transmitter.js');
 
 var redisCli = redis.createClient();
