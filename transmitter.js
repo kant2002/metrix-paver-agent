@@ -11,6 +11,15 @@ function Transmitter(options){
   this.lastTransmission = null;
 };
 
+Transmitter.prototype.getScope = function(){
+  var self = this;
+  return axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {});
+};
+
+Transmitter.prototype.postData = function(data){
+  return axios.post(this.host + 'api/production/paverTransmit', data);
+};
+
 Transmitter.prototype.sync = function(data){
   console.log('Paver transmitter service launched');
   var self = this;
@@ -41,13 +50,6 @@ Transmitter.prototype.sync = function(data){
   });
 };
 
-Transmitter.prototype.getScope = function(){
-  var self = this;
-  return axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {});
-};
 
-Transmitter.prototype.postData = function(data){
-  return axios.post(this.host + 'api/production/paverTransmit', data);
-};
 
 module.exports = Transmitter;

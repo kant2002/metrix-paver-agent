@@ -100,30 +100,6 @@ var dowelDip = gpio.export(26, { // PIN 27
    }
 });
 
-// var crawlerHead = gpio.export(13, { // PIN 33
-//    direction: "in",
-//    ready: function() {
-//      crawlerHead.set(1);
-//      console.log('ready', crawlerHead.value);
-//    }
-// });
-//
-// var crawlerTail = gpio.export(19, { // PIN 35
-//    direction: "in",
-//    ready: function() {
-//      crawlerTail.set(1);
-//      console.log('ready', crawlerTail.value);
-//    }
-// });
-
-
-// setInterval(function(){
-//   redisCli.get('dist', function(err, reply){
-//     console.log('--', parseInt(reply)*cRadius);
-//   });
-// }, 1000);
-
-
 
 dowelExist.on("change", function(val){
   if(val == 0){
@@ -162,73 +138,4 @@ dowelDip.on("change", function(val){
       });
     });
   }
-});
-
-
-// crawlerHead.on("change", function(val) {
-//    // value will report either 1 or 0 (number) when the value changes
-//    if(positionFault){
-//      positionFault = false;
-//      return 0;
-//    }
-//
-//    if(!record.startTime) record.startTime = new Date();
-//
-//    if(val == 1){
-//      if(crawlerTail.value == 0){
-//        record.distance += crawlerSpace/4;
-//        console.log('>>>1 ', record.distance);
-//      }
-//      else{
-//        record.distance -= crawlerSpace/4;
-//        console.log('<<<1 ', record.distance);
-//      }
-//    }
-//    else {
-//      if(crawlerTail.value == 0){
-//        record.distance -= crawlerSpace/4;
-//        console.log('<<<2 ', record.distance);
-//      }
-//      else{
-//        record.distance += crawlerSpace/4;
-//        console.log('>>>2 ', record.distance);
-//      }
-//    }
-// });
-//
-// crawlerTail.on("change", function(val) {
-//    // value will report either 1 or 0 (number) when the value changes
-//
-//    if(positionFault){
-//      positionFault = false;
-//      return 0;
-//    }
-//
-//    if(!record.startTime) record.startTime = new Date();
-//
-//    if(val == 0){
-//      if(crawlerHead.value == 0){
-//        record.distance += crawlerSpace/4;
-//        console.log('>>>3 ', record.distance);
-//      }
-//      else{
-//        record.distance -= crawlerSpace/4;
-//        console.log('<<<3 ', record.distance);
-//      }
-//    }
-//    else {
-//      if(crawlerHead.value == 0){
-//        record.distance -= crawlerSpace/4;
-//        console.log('<<<4 ', record.distance);
-//      }
-//      else{
-//        record.distance += crawlerSpace/4;
-//        console.log('>>>4 ', record.distance);
-//      }
-//    }
-// });
-
-DB.query('SELECT * from paverTrace', function(err, rows) {
-  console.log('--',rows)
-  // connected! (unless `err` is set)
 });
