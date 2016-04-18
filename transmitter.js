@@ -35,7 +35,7 @@ Transmitter.prototype.sync = function(data){
       if(err || rows.length == 0){
         console.log('No Data Left:', err);
         this.lastTransmission = new Date();
-        self.syncLoop = setTimeout(self.sync, self.syncTimeout);
+        setTimeout(function(){self.sync()}, self.syncTimeout);
       }
       else{
         rows.map(function(row){
@@ -44,12 +44,12 @@ Transmitter.prototype.sync = function(data){
         axios.post(this.host + 'api/production/paverTransmit', {data:rows}).then(function(result){
           console.log('['+result.data.code+']', result.data.msg)
           this.lastTransmission = new Date();
-          self.syncLoop = setTimeout(self.sync, self.syncTimeout);
+          setTimeout(function(){self.sync()}, self.syncTimeout);
         })
         .catch(function(error){
           console.log('TRANSMISSION ERROR:', error.status);
           this.lastTransmission = new Date();
-          self.syncLoop = setTimeout(self.sync, self.syncTimeout);
+          setTimeout(function(){self.sync()}, self.syncTimeout);
         });
       }
     });
@@ -57,7 +57,7 @@ Transmitter.prototype.sync = function(data){
   .catch(function(error){
     console.log('connection error:', error, this);
     this.lastTransmission = new Date();
-    self.syncLoop = setTimeout(self.sync, self.syncTimeout);
+    setTimeout(function(){self.sync()}, self.syncTimeout);
   });
 };
 
