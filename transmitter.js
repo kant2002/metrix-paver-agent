@@ -55,7 +55,7 @@ Transmitter.prototype.sync = function(data){
     });
   })
   .catch(function(error){
-    console.log('connection error:', error);
+    console.log('connection error:', error, this);
     this.lastTransmission = new Date();
     self.syncLoop = setTimeout(self.sync, self.syncTimeout);
   });
