@@ -29,7 +29,6 @@ Transmitter.prototype.sync = function(data){
   }
 
   axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {}).then(function(response){
-    console.log('resp:', response.data);
     self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [response.data.updatedAt], function(err, rows) {
       console.log('rows:', rows);
       if(err || rows.length == 0){
@@ -47,7 +46,7 @@ Transmitter.prototype.sync = function(data){
           setTimeout(function(){self.sync()}, self.syncTimeout);
         })
         .catch(function(error){
-          console.log('TRANSMISSION ERROR:', error);
+          console.log('TRANSMISSION ERROR:', error, this);
           this.lastTransmission = new Date();
           setTimeout(function(){self.sync()}, self.syncTimeout);
         });
@@ -55,7 +54,7 @@ Transmitter.prototype.sync = function(data){
     });
   })
   .catch(function(error){
-    console.log('connection error:', error, this);
+    console.log('connection error:', error);
     this.lastTransmission = new Date();
     setTimeout(function(){self.sync()}, self.syncTimeout);
   });
