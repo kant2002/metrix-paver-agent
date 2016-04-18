@@ -39,6 +39,7 @@ Transmitter.prototype.sync = function(data){
       else{
         rows.map(function(row){
           row.scopeId = response.data.id;
+          delete row.id;
         });
         axios.post(self.host + 'api/production/paverTransmit', {data:rows}).then(function(result){
           console.log('['+result.data.code+']', result.data.msg)
