@@ -47,7 +47,7 @@ Transmitter.prototype.sync = function(data){
           setTimeout(function(){self.sync()}, self.syncTimeout);
         })
         .catch(function(error){
-          console.log('TRANSMISSION ERROR:', error.status);
+          console.log('TRANSMISSION ERROR:', error);
           this.lastTransmission = new Date();
           setTimeout(function(){self.sync()}, self.syncTimeout);
         });
