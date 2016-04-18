@@ -29,26 +29,26 @@ def persist():
 
 def head_gpio(channel):
     global distance
-    if GPIO.input(13):
-        if GPIO.input(19) == 0:
+    if GPIO.input(19):
+        if GPIO.input(13) == 0:
             distance+=1
         else:
             distance-=1
     else:
-        if GPIO.input(19) == 0:
+        if GPIO.input(13) == 0:
             distance-=1
         else:
             distance+=1
 
 def tail_gpio(channel):
     global distance
-    if GPIO.input(19):
-        if GPIO.input(13) == 0:
+    if GPIO.input(13):
+        if GPIO.input(19) == 0:
             distance-=1
         else:
             distance+=1
     else:
-        if GPIO.input(13) == 0:
+        if GPIO.input(19) == 0:
             distance+=1
         else:
             distance-=1

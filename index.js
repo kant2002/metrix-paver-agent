@@ -1,4 +1,4 @@
-require('dotenv').load();
+require('dotenv').config({silent: true}).load();
 var mysql       = require('mysql');
 var gpio        = require('gpio');
 var axios       = require("axios");

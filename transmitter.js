@@ -2,7 +2,7 @@ var axios = require("axios");
 
 
 function Transmitter(options){
-  this.syncTimeout = 20000;
+  this.syncTimeout = 30000;
   this.syncLoop = null;
   this.host = options.remoteOrigin;
   this.deviceId = options.deviceId;
@@ -23,8 +23,8 @@ Transmitter.prototype.postData = function(data){
 Transmitter.prototype.sync = function(data){
   console.log('Paver transmitter service launched');
   var self = this;
-  if(data && ((new Date - this.lastTransmission) < 5000 )){
-    setTimeout(function(){self.sync(data)}, 5000);
+  if(data && ((new Date - this.lastTransmission) < 7000 )){
+    setTimeout(function(){self.sync(data)}, 7000);
     return 0;
   }
 
