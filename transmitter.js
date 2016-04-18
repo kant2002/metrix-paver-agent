@@ -13,7 +13,7 @@ function Transmitter(options){
 
 Transmitter.prototype.getScope = function(){
   var self = this;
-  return axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {});
+  return
 };
 
 Transmitter.prototype.postData = function(data){
@@ -28,7 +28,7 @@ Transmitter.prototype.sync = function(data){
     return 0;
   }
 
-  self.getScope().then(function(response){
+  axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {}).then(function(response){
     self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [response.data.updatedAt], function(err, rows) {
       console.log('rows:', rows);
       if(err || rows.length == 0){
