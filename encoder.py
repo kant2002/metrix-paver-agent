@@ -59,5 +59,5 @@ GPIO.add_event_detect(19, GPIO.BOTH, callback=tail_gpio)
 thread=threading.Thread(target=persist)
 thread.start()
 thread.join()
-
+raw_input("Press Enter when ready\n>")
 GPIO.cleanup()           # clean up GPIO on normal exit
