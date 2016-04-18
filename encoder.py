@@ -57,6 +57,7 @@ def tail_gpio(channel):
 GPIO.add_event_detect(13, GPIO.BOTH, callback=head_gpio)
 GPIO.add_event_detect(19, GPIO.BOTH, callback=tail_gpio)
 thread=threading.Thread(target=persist)
+thread.daemon = True
 thread.start()
 thread.join()
 raw_input("Press Enter when ready\n>")
