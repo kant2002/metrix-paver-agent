@@ -28,26 +28,26 @@ Transmitter.prototype.sync = function(data){
     return 0;
   }
 
-  axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {}).then(function(response){
+  axios.get(self.host + 'api/production/paverIndex/?deviceId=' + self.deviceId, {}).then(function(response){
     self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [response.data.updatedAt], function(err, rows) {
       console.log('rows:', rows);
       if(err || rows.length == 0){
         console.log('No Data Left:', err);
-        this.lastTransmission = new Date();
+        self.lastTransmission = new Date();
         setTimeout(function(){self.sync()}, self.syncTimeout);
       }
       else{
         rows.map(function(row){
           row.scopeId = response.data.id;
         });
-        axios.post(this.host + 'api/production/paverTransmit', {data:rows}).then(function(result){
+        axios.post(self.host + 'api/production/paverTransmit', {data:rows}).then(function(result){
           console.log('['+result.data.code+']', result.data.msg)
-          this.lastTransmission = new Date();
+          self.lastTransmission = new Date();
           setTimeout(function(){self.sync()}, self.syncTimeout);
         })
         .catch(function(error){
-          console.log('TRANSMISSION ERROR:', error, this);
-          this.lastTransmission = new Date();
+          console.log('TRANSMISSION ERROR:', error);
+          self.lastTransmission = new Date();
           setTimeout(function(){self.sync()}, self.syncTimeout);
         });
       }
@@ -55,7 +55,7 @@ Transmitter.prototype.sync = function(data){
   })
   .catch(function(error){
     console.log('connection error:', error);
-    this.lastTransmission = new Date();
+    self.lastTransmission = new Date();
     setTimeout(function(){self.sync()}, self.syncTimeout);
   });
 };
