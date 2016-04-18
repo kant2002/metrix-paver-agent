@@ -79,7 +79,7 @@ var record = {
 var dowelCurrent = 0;
 
 
-var dowelExist = gpio.export(6, { // PIN 31
+var dowelExist = gpio.export(26, { // PIN 27
    direction: "in",
    ready: function() {
      console.log('ready');
@@ -93,7 +93,7 @@ var dowelGear = gpio.export(5, { // PIN 29
    }
 });
 
-var dowelDip = gpio.export(26, { // PIN 27
+var dowelDip = gpio.export(6, { // PIN 31
    direction: "in",
    ready: function() {
      console.log('ready');
