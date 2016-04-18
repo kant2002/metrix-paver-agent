@@ -29,7 +29,7 @@ Transmitter.prototype.sync = function(data){
   }
 
   axios.get(self.host + 'api/production/paverIndex/?deviceId=' + self.deviceId, {}).then(function(response){
-    self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [response.data.updatedAt.toLocaleString('en-US', { timeZone: 'Asia/Almaty' })], function(err, rows) {
+    self.DB.query('SELECT * from `paverTrace` WHERE CONVERT_TZ( `finishTime`, @@session.time_zone, `+00:00` ) > ?', [response.data.updatedAt.toLocaleString('en-US', { timeZone: 'Asia/Almaty' })], function(err, rows) {
       if(err || rows.length == 0){
         console.log('No Data Left:', err);
         self.lastTransmission = new Date();
