@@ -29,7 +29,7 @@ Transmitter.prototype.sync = function(data){
   }
 
   axios.get(this.host + 'api/production/paverIndex/?deviceId=' + this.deviceId, {}).then(function(response){
-    console.log('resp:', response);
+    console.log('resp:', response.data);
     self.DB.query('SELECT * from `paverTrace` WHERE `finishTime` > ?', [response.data.updatedAt], function(err, rows) {
       console.log('rows:', rows);
       if(err || rows.length == 0){

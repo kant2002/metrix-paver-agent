@@ -23,7 +23,7 @@ DB.connect(function(err) {
     console.error('error connecting: ' + err.stack);
     return;
   }
-  console.log('connected as id ' + connection.threadId);
+  console.log('connected as id ' + DB.threadId);
   var transmitter = new Transmitter({
     remoteOrigin: process.env.REMOTE_ORIGIN || 'http://metrix.kz/',
     deviceId:     process.env.DEVICE_ID,
