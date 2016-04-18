@@ -59,4 +59,13 @@ GPIO.add_event_detect(19, GPIO.BOTH, callback=tail_gpio)
 thread=threading.Thread(target=persist)
 thread.start()
 thread.join()
-GPIO.cleanup()           # clean up GPIO on normal exit
+
+def sigterm_handler(_signo, _stack_frame):
+    "When sysvinit sends the TERM signal, cleanup before exiting."
+    print("[" + get_now() + "] received signal {}, exiting...".format(_signo))
+    GPIO.cleanup()
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, sigterm_handler)
+
+          # clean up GPIO on normal exit
