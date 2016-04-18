@@ -36,21 +36,22 @@ Transmitter.prototype.sync = function(data){
         console.log('No Data Left:', err);
         this.lastTransmission = new Date();
         self.syncLoop = setTimeout(self.sync, self.syncTimeout);
-        return 0;
       }
-      rows.map(function(row){
-        row.scopeId = response.data.id;
-      });
-      axios.post(this.host + 'api/production/paverTransmit', {data:rows}).then(function(result){
-        console.log('['+result.data.code+']', result.data.msg)
-        this.lastTransmission = new Date();
-        self.syncLoop = setTimeout(self.sync, self.syncTimeout);
-      })
-      .catch(function(error){
-        console.log('TRANSMISSION ERROR:', error.status);
-        this.lastTransmission = new Date();
-        self.syncLoop = setTimeout(self.sync, self.syncTimeout);
-      });
+      else{
+        rows.map(function(row){
+          row.scopeId = response.data.id;
+        });
+        axios.post(this.host + 'api/production/paverTransmit', {data:rows}).then(function(result){
+          console.log('['+result.data.code+']', result.data.msg)
+          this.lastTransmission = new Date();
+          self.syncLoop = setTimeout(self.sync, self.syncTimeout);
+        })
+        .catch(function(error){
+          console.log('TRANSMISSION ERROR:', error.status);
+          this.lastTransmission = new Date();
+          self.syncLoop = setTimeout(self.sync, self.syncTimeout);
+        });
+      }
     });
   })
   .catch(function(error){
