@@ -1,4 +1,4 @@
-require('dotenv').config({path: '/home/pi/metrix-paver-agent'});
+require('dotenv').load();
 var mysql       = require('mysql');
 var gpio        = require('gpio');
 var axios       = require("axios");
