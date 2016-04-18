@@ -18,14 +18,23 @@ var DB = mysql.createConnection({
   database: process.env.DB_NAME
 });
 
+DB.connect(function(err) {
+  if (err) {
+    console.error('error connecting: ' + err.stack);
+    return;
+  }
+  console.log('connected as id ' + connection.threadId);
+  var transmitter = new Transmitter({
+    remoteOrigin: process.env.REMOTE_ORIGIN || 'http://metrix.kz/',
+    deviceId:     process.env.DEVICE_ID,
+    DB: DB,
+  })
 
-var transmitter = new Transmitter({
-  remoteOrigin: process.env.REMOTE_ORIGIN || 'http://metrix.kz/',
-  deviceId:     process.env.DEVICE_ID,
-  DB: DB,
+  transmitter.sync();
 })
 
-transmitter.sync();
+
+
 
 // var port = new serialport.SerialPort('/dev/ttyACM0', {
 //                 baudrate: 9600,
