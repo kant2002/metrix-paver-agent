@@ -41,7 +41,7 @@ Transmitter.prototype.sync = function(data){
       rows.map(function(row){
         row.scopeId = response.data.id;
       });
-      self.postData({data:rows}).then(function(result){
+      axios.post(this.host + 'api/production/paverTransmit', {data:rows}).then(function(result){
         console.log('['+result.data.code+']', result.data.msg)
         this.lastTransmission = new Date();
         self.syncLoop = setTimeout(self.sync, self.syncTimeout);
@@ -56,6 +56,7 @@ Transmitter.prototype.sync = function(data){
   .catch(function(error){
     console.log('connection error:', error);
     this.lastTransmission = new Date();
+    self.syncLoop = setTimeout(self.sync, self.syncTimeout);
   });
 };
 
