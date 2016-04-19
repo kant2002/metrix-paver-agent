@@ -59,7 +59,6 @@ GPS_port.on('data', function(line) {
   try {
     var gis = nmea.parse(line);
     if(nmea_codes.indexOf(gis.sentence) > -1){
-      console.log(gis.sentence, '--------------------------');
       record.latitude = gis.lat;
       record.longitude =  gis.lon;
     }
