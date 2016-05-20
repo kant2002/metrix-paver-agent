@@ -39,18 +39,18 @@ function Arduino(options){
   //     }
   //   });
   // });
-}
+};
 
 Arduino.prototype.display = function(index, data){
   data = ''+data;
   result = displayPad.substring(0, displayPad.length - data.length) + data;
   result = result.substring(result.length - displayPad.length);
   nanoPort.write(index+'='+result+'\r\n');
-}
+};
 
 function sendAlive(){
   nanoPort.write('aline=true\r\n');
-}
+};
 
 
 function shutdown(){
@@ -59,4 +59,6 @@ function shutdown(){
       console.log('exec error: ' + error);
     }
   });
-}
+};
+
+module.exports = Arduino;
