@@ -6,11 +6,13 @@ import time
 import threading
 GPIO.setmode(GPIO.BCM)
 
-# GPIO 13 & 19 set up as inputs, pulled up to avoid false detection.
-# Both ports are wired to connect to GND on button press.
-# So we'll be setting up falling edge detection for both
-GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+# GPIO   PIN   CONNNECTOR
+# ----- ----- -----------
+#  12    32     1
+#   7    26     2
+
+GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 distance=0
 dis_reset=0
@@ -29,33 +31,33 @@ def persist():
 
 def head_gpio(channel):
     global distance
-    if GPIO.input(19):
-        if GPIO.input(13) == 0:
+    if GPIO.input(7):
+        if GPIO.input(12) == 0:
             distance+=1
         else:
             distance-=1
     else:
-        if GPIO.input(13) == 0:
+        if GPIO.input(12) == 0:
             distance-=1
         else:
             distance+=1
 
 def tail_gpio(channel):
     global distance
-    if GPIO.input(13):
-        if GPIO.input(19) == 0:
+    if GPIO.input(12):
+        if GPIO.input(7) == 0:
             distance-=1
         else:
             distance+=1
     else:
-        if GPIO.input(19) == 0:
+        if GPIO.input(7) == 0:
             distance+=1
         else:
             distance-=1
 
 
-GPIO.add_event_detect(13, GPIO.BOTH, callback=head_gpio)
-GPIO.add_event_detect(19, GPIO.BOTH, callback=tail_gpio)
+GPIO.add_event_detect(12, GPIO.BOTH, callback=head_gpio)
+GPIO.add_event_detect(7, GPIO.BOTH, callback=tail_gpio)
 thread=threading.Thread(target=persist)
 thread.start()
 thread.join()
