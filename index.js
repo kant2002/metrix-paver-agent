@@ -101,12 +101,12 @@ var dowelDip = gpio.export(24, { // PIN 18 | CONN 5
    ready: function(){console.log('ready');}
 });
 
-var tieExist = gpio.export({23, { // PIN:16 | CONN: 6
+var tieExist = gpio.export(23, { // PIN:16 | CONN: 6
   direction: "in",
   ready: function(){console.log('ready');}
 }})
 
-var tieDip = gpio.export({18, { // PIN:12 | CONN: 7
+var tieDip = gpio.export(18, { // PIN:12 | CONN: 7
   direction: "in",
   ready: function(){console.log('ready');}
 }})
