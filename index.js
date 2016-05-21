@@ -131,7 +131,7 @@ dowelGear.on("change", function(val){
 });
 
 dowelExist.on("change", function(val){
-  if(val == 0 && !signalPin.dowelExist.mute){
+  if((val == 0) && (signalPin.dowelExist.mute == false)){
     muteSignal('dowelExist')
     dowelCurrent = 1;
     dowelRecord.count++;
@@ -139,9 +139,10 @@ dowelExist.on("change", function(val){
   }
 });
 
-
+var dowie = 0;
 dowelDip.on("change", function(val){
-  if(val == 0 && !signalPin.dowelDip.mute){
+  if((val == 0) && (signalPin.dowelDip.mute == false){
+    console.log('dowie ', dowie++);
     muteSignal('dowelDip');
     console.log('Distance: ', dowelRecord.distance);
     console.log('Dowels:   ', dowelRecord.dowelMap);
@@ -174,7 +175,7 @@ dowelDip.on("change", function(val){
 });
 
 tieExist.on("change", function(val){
-  if(val == 0 && !signalPin.tieExist.mute){
+  if((val == 0) && (signalPin.tieExist.mute == false)){
     muteSignal('tieExist');
     console.log('Tie Exist: ');
     tieRecord.exist = true;
@@ -183,7 +184,7 @@ tieExist.on("change", function(val){
 
 var tieo = 0;
 tieDip.on("change", function(val){
-  if(val == 0 && !signalPin.tieDip.mute){
+  if((val == 0) && (signalPin.tieDip.mute == false)){
     console.log('tie ', tieo++);
     muteSignal('tieDip');
   //   tieRecord.dipTime = new Date();
