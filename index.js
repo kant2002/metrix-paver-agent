@@ -71,7 +71,9 @@ var nmea_codes = ['GGA', 'GLL'];
 
 GPS_port.on('data', function(line) {
   try {
+
     var gis = nmea.parse(line);
+
     if(gis.sentence == 'GLL'){
       dowelRecord.latitude = tieRecord.latitude = parseFloat(gis.lat);
       dowelRecord.longitude = tieRecord.longitude = parseFloat(gis.lon);
