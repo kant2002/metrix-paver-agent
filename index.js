@@ -87,11 +87,11 @@ GPS_port.on('data', function(line) {
 
 
 var signalPin = {
-  dowelGear  : {mute:false, duration: 250},
-  dowelExist : {mute:false, duration: 250},
-  dowelDip   : {mute:false, duration: 250},
-  tieExist   : {mute:false, duration: 250},
-  tieDip     : {mute:false, duration: 250}
+  dowelGear  : {mute:false, duration: 350},
+  dowelExist : {mute:false, duration: 350},
+  dowelDip   : {mute:false, duration: 350},
+  tieExist   : {mute:false, duration: 350},
+  tieDip     : {mute:false, duration: 350}
 }
 
 
@@ -181,33 +181,35 @@ tieExist.on("change", function(val){
   }
 });
 
+var tieo = 0;
 tieDip.on("change", function(val){
   if(val == 0 && !signalPin.tieDip.mute){
+    console.log('tie ', tieo++);
     muteSignal('tieDip');
-    tieRecord.dipTime = new Date();
-    redisCli.get('dist', function(err, reply){
-      tieRecord.distance = parseInt(reply)*cRadius;
-      DB.query('INSERT INTO tiePoint SET ?', tieRecord, function(err, rows){
-        if(err){
-          console.log('[DB:ERROR] tiePoint insert', err);
-        }
-
-        if(rows){
-          var tieRecord = {
-            distance: 0,
-            exist: false,
-            latitude: 0,
-            longitude: 0,
-            dipTime: null
-          };
-          console.log('*   TIE RECORD SAVED!', rows.insertId);
-          console.log('---------------------------------------')
-        }
-        // transmitter.sync(rows);
-
-      });
-    });
-  }
+  //   tieRecord.dipTime = new Date();
+  //   redisCli.get('dist', function(err, reply){
+  //     tieRecord.distance = parseInt(reply)*cRadius;
+  //     DB.query('INSERT INTO tiePoint SET ?', tieRecord, function(err, rows){
+  //       if(err){
+  //         console.log('[DB:ERROR] tiePoint insert', err);
+  //       }
+  //
+  //       if(rows){
+  //         var tieRecord = {
+  //           distance: 0,
+  //           exist: false,
+  //           latitude: 0,
+  //           longitude: 0,
+  //           dipTime: null
+  //         };
+  //         console.log('*   TIE RECORD SAVED!', rows.insertId);
+  //         console.log('---------------------------------------')
+  //       }
+  //       // transmitter.sync(rows);
+  //
+  //     });
+  //   });
+  // }
 });
 
 function muteSignal(pin){
