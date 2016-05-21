@@ -63,23 +63,23 @@ var dowelCurrent = 0;
 
 var tieBar = 0;
 
-// var GPS_port = new serialport.SerialPort('/dev/ttyACM0', {
-//                 baudrate: 9600,
-//                 parser: serialport.parsers.readline('\r\n')});
-//
-// var nmea_codes = ['GGA', 'GLL'];
-//
-// GPS_port.on('data', function(line) {
-//   try {
-//     var gis = nmea.parse(line);
-//     if(nmea_codes.indexOf(gis.sentence) > -1){
-//       dowelRecord.latitude = gis.lat;
-//       record.longitude =  gis.lon;
-//     }
-//   } catch (e) {
-//       console.log('err', e);
-//   }
-// });
+var GPS_port = new serialport.SerialPort('/dev/ttyACM0', {
+                baudrate: 9600,
+                parser: serialport.parsers.readline('\r\n')});
+
+var nmea_codes = ['GGA', 'GLL'];
+
+GPS_port.on('data', function(line) {
+  try {
+    var gis = nmea.parse(line);
+    if(nmea_codes.indexOf(gis.sentence) > -1){
+      dowelRecord.latitude = gis.lat;
+      record.longitude =  gis.lon;
+    }
+  } catch (e) {
+      console.log('err', e);
+  }
+});
 
 
 
@@ -115,8 +115,8 @@ var tieDip = gpio.export(18, { // PIN:12 | CONN: 7
 
 dowelGear.on("change", function(val){
   if(val == 0){
-    dowlRecord.dowelMap += dowelCurrent;
-    dowelCurrent = 0;
+    // dowlRecord.dowelMap += dowelCurrent;
+    // dowelCurrent = 0;
   }
 });
 
@@ -138,6 +138,9 @@ dowelDip.on("change", function(val){
       dowelRecord.distance = parseInt(reply)*cRadius;
       DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
         console.log('set-point', err, rows);
+        if(err){
+          console.log('[DB:ERROR] setPoint insert' err);
+        }
         // transmitter.sync(rows);
         dowlRecord = {
           distance: 0,
@@ -149,6 +152,12 @@ dowelDip.on("change", function(val){
           finishTime: null
         };
         console.log('SET POINT RECORD SAVED!', rows);
+        DB.query('SELECT MAX(id) FROM setPoint', function(err, rows){
+          if(err){
+            console.log('[DB:ERROR] setPoint last select' err);
+          }
+          console.log('set_max_ID',rows);
+        });
         redisCli.set('dist_flush', '1');
       });
     });
@@ -178,6 +187,12 @@ tieDip.on("change", function(val){
           dipTime: null
         };
         console.log('TIE RECORD SAVED!', rows);
+        DB.query('SELECT MAX(id) FROM tiePoint', function(err, rows){
+          if(err){
+            console.log('[DB:ERROR] setPoint last select' err);
+          }
+          console.log('tie_max_ID',rows);
+        });
       });
     });
   }
