@@ -149,6 +149,7 @@ dowelDip.on("change", function(val){
     dowelRecord.finishTime = new Date();
     redisCli.get('dist', function(err, reply){
       dowelRecord.distance = parseInt(reply)*cRadius;
+      console.log('SET VALUE',dowelRecord);
       DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
         if(err){
           console.log('[DB:ERROR] setPoint insert', err);
