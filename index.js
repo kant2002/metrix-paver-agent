@@ -72,6 +72,7 @@ var nmea_codes = ['GGA', 'GLL'];
 GPS_port.on('data', function(line) {
   try {
     var gis = nmea.parse(line);
+    console.log('GIS:', gis);
     if(nmea_codes.indexOf(gis.sentence) > -1){
       dowelRecord.latitude = tieRecord.latitude = gis.lat;
       dowelRecord.longitude = tieRecord.longitude = gis.lon;
@@ -152,13 +153,8 @@ dowelDip.on("change", function(val){
           startTime: null,
           finishTime: null
         };
-        console.log('SET POINT RECORD SAVED!', rows);
-        DB.query('SELECT MAX(id) FROM setPoint', function(err, rows){
-          if(err){
-            console.log('[DB:ERROR] setPoint last select', err);
-          }
-          console.log('set_max_ID',rows);
-        });
+        console.log('*** SET POINT RECORD SAVED!', rows.insertId);
+        console.log('=======================================')
         redisCli.set('dist_flush', '1');
       });
     });
@@ -187,13 +183,8 @@ tieDip.on("change", function(val){
           longitude: 0,
           dipTime: null
         };
-        console.log('TIE RECORD SAVED!', rows);
-        DB.query('SELECT MAX(id) FROM tiePoint', function(err, rows){
-          if(err){
-            console.log('[DB:ERROR] setPoint last select', err);
-          }
-          console.log('tie_max_ID',rows);
-        });
+        console.log('*   TIE RECORD SAVED!', rows.insertId);
+        console.log('---------------------------------------')
       });
     });
   }
