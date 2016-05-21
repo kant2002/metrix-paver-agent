@@ -150,6 +150,7 @@ dowelDip.on("change", function(val){
       console.log('redis re[ply', dowie++);
       dowelRecord.distance = parseInt(reply)*cRadius;
       console.log('SET VALUE',dowelRecord);
+      
       DB.query('DELETE FROM setPoint ORDER BY DESC LIMIT 1');
       // DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
       //
