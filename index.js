@@ -142,12 +142,12 @@ dowelExist.on("change", function(val){
 var dowie = 0;
 dowelDip.on("change", function(val){
   if((val == 0) && (signalPin.dowelDip.mute == false)){
-    console.log('dowie ', dowie++);
     muteSignal('dowelDip');
     console.log('Distance: ', dowelRecord.distance);
     console.log('Dowels:   ', dowelRecord.dowelMap);
     dowelRecord.finishTime = new Date();
     redisCli.get('dist', function(err, reply){
+      console.log('redis re[ply', dowie++);
       dowelRecord.distance = parseInt(reply)*cRadius;
       console.log('SET VALUE',dowelRecord);
       DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
