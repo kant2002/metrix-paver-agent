@@ -132,7 +132,7 @@ dowelGear.on("change", function(val){
 
 dowelExist.on("change", function(val){
   if(val == 0 && !signalPin.dowelExist.mute){
-    !signalPin.dowelExist.mute = true;
+    muteSignal('dowelExist')
     dowelCurrent = 1;
     dowelRecord.count++;
     arduino.display(0, dowelRecord.count+'33');
@@ -142,7 +142,7 @@ dowelExist.on("change", function(val){
 
 dowelDip.on("change", function(val){
   if(val == 0 && !signalPin.dowelDip.mute){
-    signalPin.dowelDip.mute = true;
+    muteSignal('dowelDip');
     console.log('Distance: ', dowelRecord.distance);
     console.log('Dowels:   ', dowelRecord.dowelMap);
     dowelRecord.finishTime = new Date();
@@ -175,7 +175,7 @@ dowelDip.on("change", function(val){
 
 tieExist.on("change", function(val){
   if(val == 0 && !signalPin.tieExist.mute){
-    signalPin.tieExist.mute = true;
+    muteSignal('tieExist');
     console.log('Tie Exist: ');
     tieRecord.exist = true;
   }
@@ -183,7 +183,7 @@ tieExist.on("change", function(val){
 
 tieDip.on("change", function(val){
   if(val == 0 && !signalPin.tieDip.mute){
-    signalPin.tieExist.mute = true;
+    muteSignal('tieDip');
     tieRecord.dipTime = new Date();
     redisCli.get('dist', function(err, reply){
       tieRecord.distance = parseInt(reply)*cRadius;
@@ -210,7 +210,8 @@ tieDip.on("change", function(val){
   }
 });
 
-function unmuteSignal(pin){
+function muteSignal(pin){
+  signalPin[pin].mute = true;
   setTimeout(signalPin[pin].duration, function(){
     signalPin[pin].mute = false;
   });
