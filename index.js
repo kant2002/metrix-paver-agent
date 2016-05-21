@@ -73,8 +73,9 @@ GPS_port.on('data', function(line) {
   try {
     var gis = nmea.parse(line);
     if(nmea_codes.indexOf(gis.sentence) > -1){
-      dowelRecord.latitude = gis.lat;
-      record.longitude =  gis.lon;
+      dowelRecord.latitude = tieRecord.latitude = gis.lat;
+      dowelRecord.longitude = tieRecord.longitude = gis.lon;
+
     }
   } catch (e) {
       console.log('err', e);
