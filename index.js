@@ -144,7 +144,7 @@ dowelDip.on("change", function(val){
           console.log('[DB:ERROR] setPoint insert', err);
         }
         // transmitter.sync(rows);
-        dowlRecord = {
+        dowelRecord = {
           distance: 0,
           count: 0,
           map: '',
