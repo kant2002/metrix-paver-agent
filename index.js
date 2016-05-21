@@ -139,7 +139,7 @@ dowelDip.on("change", function(val){
       DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
         console.log('set-point', err, rows);
         if(err){
-          console.log('[DB:ERROR] setPoint insert' err);
+          console.log('[DB:ERROR] setPoint insert', err);
         }
         // transmitter.sync(rows);
         dowlRecord = {
