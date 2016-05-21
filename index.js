@@ -212,7 +212,7 @@ tieDip.on("change", function(val){
 
 function muteSignal(pin){
   signalPin[pin].mute = true;
-  setTimeout(signalPin[pin].duration, function(){
+  setTimeout(function(){
     signalPin[pin].mute = false;
-  });
+  }, signalPin[pin].duration);
 }
