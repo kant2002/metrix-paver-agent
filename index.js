@@ -209,7 +209,7 @@ tieDip.on("change", function(val){
   //
   //     });
   //   });
-  // }
+   }
 });
 
 function muteSignal(pin){
