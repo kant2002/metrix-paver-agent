@@ -86,13 +86,20 @@ GPS_port.on('data', function(line) {
 
 
 
-
+var signalPin = {
+  dowelGear  : {mute:false, duration: 150},
+  dowelExist : {mute:false, duration: 150},
+  dowelDip   : {mute:false, duration: 150},
+  tieExist   : {mute:false, duration: 150},
+  tieDip     : {mute:false, duration: 150}
+}
 
 
 var dowelGear = gpio.export(8, { // PIN 24 | CONN 3
    direction: "in",
    ready: function(){console.log('ready');}
 });
+
 
 var dowelExist = gpio.export(25, { // PIN 22 | CONN 4
   direction: "in",
@@ -124,7 +131,8 @@ dowelGear.on("change", function(val){
 });
 
 dowelExist.on("change", function(val){
-  if(val == 0){
+  if(val == 0 && !signalPin.dowelExist.mute){
+    !signalPin.dowelExist.mute = true;
     dowelCurrent = 1;
     dowelRecord.count++;
     arduino.display(0, dowelRecord.count+'33');
@@ -133,7 +141,8 @@ dowelExist.on("change", function(val){
 
 
 dowelDip.on("change", function(val){
-  if(val == 0){
+  if(val == 0 && !signalPin.dowelDip.mute){
+    signalPin.dowelDip.mute = true;
     console.log('Distance: ', dowelRecord.distance);
     console.log('Dowels:   ', dowelRecord.dowelMap);
     dowelRecord.finishTime = new Date();
@@ -165,14 +174,16 @@ dowelDip.on("change", function(val){
 });
 
 tieExist.on("change", function(val){
-  if(val == 0){
+  if(val == 0 && !signalPin.tieExist.mute){
+    signalPin.tieExist.mute = true;
     console.log('Tie Exist: ');
     tieRecord.exist = true;
   }
 });
 
 tieDip.on("change", function(val){
-  if(val == 0){
+  if(val == 0 && !signalPin.tieDip.mute){
+    signalPin.tieExist.mute = true;
     tieRecord.dipTime = new Date();
     redisCli.get('dist', function(err, reply){
       tieRecord.distance = parseInt(reply)*cRadius;
@@ -198,3 +209,9 @@ tieDip.on("change", function(val){
     });
   }
 });
+
+function unmuteSignal(pin){
+  setTimeout(signalPin[pin].duration, function(){
+    signalPin[pin].mute = false;
+  });
+}
