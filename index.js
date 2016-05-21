@@ -154,7 +154,7 @@ dowelDip.on("change", function(val){
         console.log('SET POINT RECORD SAVED!', rows);
         DB.query('SELECT MAX(id) FROM setPoint', function(err, rows){
           if(err){
-            console.log('[DB:ERROR] setPoint last select' err);
+            console.log('[DB:ERROR] setPoint last select', err);
           }
           console.log('set_max_ID',rows);
         });
@@ -189,7 +189,7 @@ tieDip.on("change", function(val){
         console.log('TIE RECORD SAVED!', rows);
         DB.query('SELECT MAX(id) FROM tiePoint', function(err, rows){
           if(err){
-            console.log('[DB:ERROR] setPoint last select' err);
+            console.log('[DB:ERROR] setPoint last select', err);
           }
           console.log('tie_max_ID',rows);
         });
