@@ -150,29 +150,30 @@ dowelDip.on("change", function(val){
       console.log('redis re[ply', dowie++);
       dowelRecord.distance = parseInt(reply)*cRadius;
       console.log('SET VALUE',dowelRecord);
-      DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
-
-        console.log('>>>', err, rows);
-        if(err){
-          console.log('[DB:ERROR] setPoint insert', err);
-        }
-        // transmitter.sync(rows);
-        if(rows){
-          dowelRecord = {
-            distance: 0,
-            count: 0,
-            map: '',
-            latitude: 0,
-            longitude: 0,
-            startTime: null,
-            finishTime: null
-          };
-          console.log('*** SET POINT RECORD SAVED!', rows.insertId);
-          console.log('=======================================')
-          redisCli.set('dist_flush', '1');
-        }
-
-      });
+      DB.query('DELETE FROM setPoint ORDER BY DESC LIMIT 1');
+      // DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
+      //
+      //   console.log('>>>', err, rows);
+      //   if(err){
+      //     console.log('[DB:ERROR] setPoint insert', err);
+      //   }
+      //   // transmitter.sync(rows);
+      //   if(rows){
+      //     dowelRecord = {
+      //       distance: 0,
+      //       count: 0,
+      //       map: '',
+      //       latitude: 0,
+      //       longitude: 0,
+      //       startTime: null,
+      //       finishTime: null
+      //     };
+      //     console.log('*** SET POINT RECORD SAVED!', rows.insertId);
+      //     console.log('=======================================')
+      //     redisCli.set('dist_flush', '1');
+      //   }
+      //
+      // });
     });
   }
 });
