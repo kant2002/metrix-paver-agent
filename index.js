@@ -87,11 +87,11 @@ GPS_port.on('data', function(line) {
 
 
 var signalPin = {
-  dowelGear  : {mute:false, duration: 350},
-  dowelExist : {mute:false, duration: 350},
-  dowelDip   : {mute:false, duration: 350},
-  tieExist   : {mute:false, duration: 350},
-  tieDip     : {mute:false, duration: 350}
+  dowelGear  : {mute:false, duration: 150},
+  dowelExist : {mute:false, duration: 150},
+  dowelDip   : {mute:false, duration: 150},
+  tieExist   : {mute:false, duration: 150},
+  tieDip     : {mute:false, duration: 150}
 }
 
 
@@ -139,7 +139,7 @@ dowelExist.on("change", function(val){
   }
 });
 
-var dowie = 0;
+
 dowelDip.on("change", function(val){
   if((val == 0) && (signalPin.dowelDip.mute == false)){
     muteSignal('dowelDip');
@@ -147,34 +147,28 @@ dowelDip.on("change", function(val){
     console.log('Dowels:   ', dowelRecord.dowelMap);
     dowelRecord.finishTime = new Date();
     redisCli.get('dist', function(err, reply){
-      console.log('redis re[ply', dowie++);
       dowelRecord.distance = parseInt(reply)*cRadius;
-      console.log('SET VALUE',dowelRecord);
+      DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
+        if(err){
+          console.log('[DB:ERROR] setPoint insert', err);
+        }
+        // transmitter.sync(rows);
+        if(rows){
+          dowelRecord = {
+            distance: 0,
+            count: 0,
+            map: '',
+            latitude: 0,
+            longitude: 0,
+            startTime: null,
+            finishTime: null
+          };
+          console.log('*** SET POINT RECORD SAVED!', rows.insertId);
+          console.log('=======================================')
+          redisCli.set('dist_flush', '1');
+        }
 
-      DB.query('DELETE FROM setPoint LIMIT 1');
-      // DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
-      //
-      //   console.log('>>>', err, rows);
-      //   if(err){
-      //     console.log('[DB:ERROR] setPoint insert', err);
-      //   }
-      //   // transmitter.sync(rows);
-      //   if(rows){
-      //     dowelRecord = {
-      //       distance: 0,
-      //       count: 0,
-      //       map: '',
-      //       latitude: 0,
-      //       longitude: 0,
-      //       startTime: null,
-      //       finishTime: null
-      //     };
-      //     console.log('*** SET POINT RECORD SAVED!', rows.insertId);
-      //     console.log('=======================================')
-      //     redisCli.set('dist_flush', '1');
-      //   }
-      //
-      // });
+      });
     });
   }
 });
@@ -192,29 +186,28 @@ tieDip.on("change", function(val){
   if((val == 0) && (signalPin.tieDip.mute == false)){
     console.log('tie ', tieo++);
     muteSignal('tieDip');
-  //   tieRecord.dipTime = new Date();
-  //   redisCli.get('dist', function(err, reply){
-  //     tieRecord.distance = parseInt(reply)*cRadius;
-  //     DB.query('INSERT INTO tiePoint SET ?', tieRecord, function(err, rows){
-  //       if(err){
-  //         console.log('[DB:ERROR] tiePoint insert', err);
-  //       }
-  //
-  //       if(rows){
-  //         var tieRecord = {
-  //           distance: 0,
-  //           exist: false,
-  //           latitude: 0,
-  //           longitude: 0,
-  //           dipTime: null
-  //         };
-  //         console.log('*   TIE RECORD SAVED!', rows.insertId);
-  //         console.log('---------------------------------------')
-  //       }
-  //       // transmitter.sync(rows);
-  //
-  //     });
-  //   });
+    tieRecord.dipTime = new Date();
+    redisCli.get('dist', function(err, reply){
+      tieRecord.distance = parseInt(reply)*cRadius;
+      DB.query('INSERT INTO tiePoint SET ?', tieRecord, function(err, rows){
+        if(err){
+          console.log('[DB:ERROR] tiePoint insert', err);
+        }
+        if(rows){
+          var tieRecord = {
+            distance: 0,
+            exist: false,
+            latitude: 0,
+            longitude: 0,
+            dipTime: null
+          };
+          console.log('*   TIE RECORD SAVED!', rows.insertId);
+          console.log('---------------------------------------')
+        }
+        // transmitter.sync(rows);
+
+      });
+    });
    }
 });
 
