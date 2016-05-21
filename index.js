@@ -71,12 +71,10 @@ var nmea_codes = ['GGA', 'GLL'];
 
 GPS_port.on('data', function(line) {
   try {
-    var gis = nmea.parse(line);
     console.log('GIS:', gis);
-    if(nmea_codes.indexOf(gis.sentence) > -1){
-      dowelRecord.latitude = tieRecord.latitude = gis.lat;
-      dowelRecord.longitude = tieRecord.longitude = gis.lon;
-
+    if(gis.sentence == 'GLL'){
+      dowelRecord.latitude = tieRecord.latitude = parseFloat(gis.lat);
+      dowelRecord.longitude = tieRecord.longitude = parseFloat(gis.lon);
     }
   } catch (e) {
       console.log('err', e);
