@@ -87,11 +87,11 @@ GPS_port.on('data', function(line) {
 
 
 var signalPin = {
-  dowelGear  : {mute:false, duration: 150},
-  dowelExist : {mute:false, duration: 150},
-  dowelDip   : {mute:false, duration: 150},
-  tieExist   : {mute:false, duration: 150},
-  tieDip     : {mute:false, duration: 150}
+  dowelGear  : {mute:false, duration: 250},
+  dowelExist : {mute:false, duration: 250},
+  dowelDip   : {mute:false, duration: 250},
+  tieExist   : {mute:false, duration: 250},
+  tieDip     : {mute:false, duration: 250}
 }
 
 
