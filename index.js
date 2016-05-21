@@ -141,7 +141,7 @@ dowelExist.on("change", function(val){
 
 var dowie = 0;
 dowelDip.on("change", function(val){
-  if((val == 0) && (signalPin.dowelDip.mute == false){
+  if((val == 0) && (signalPin.dowelDip.mute == false)){
     console.log('dowie ', dowie++);
     muteSignal('dowelDip');
     console.log('Distance: ', dowelRecord.distance);
