@@ -151,6 +151,8 @@ dowelDip.on("change", function(val){
       dowelRecord.distance = parseInt(reply)*cRadius;
       console.log('SET VALUE',dowelRecord);
       DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
+
+        console.log('>>>', err, rows);
         if(err){
           console.log('[DB:ERROR] setPoint insert', err);
         }
