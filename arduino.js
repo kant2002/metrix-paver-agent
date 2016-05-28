@@ -1,55 +1,74 @@
 var util = require('util')
-var exec = require('child_process').exec;
-var child;
+
 
 var serialLib =require("serialport");
 var SerialPort = serialLib.SerialPort;
+var EventEmitter = require('events').EventEmitter;
 
 var nanoPort = new SerialPort("/dev/ttyAMA0", {
   baudrate: 9600,
-  parser: serialLib.parsers.readline("\r\n")
+  parser: serialLib.parsers.readline("\r")
 }, true);
 
 var displayPad = '0000';
 
 
 function Arduino(options){
-  // var aliveText="alive!";
-  // var elapsed=0;
-  // setInterval(function(){
-  // elapsed++;
-  //   //console.log("time is "+ elapsed);
-  //   if (elapsed>30){
-  //     console.log("shutdowning");
-  //     shutdown();
-  //   }
-  // }, 1000);
-  //
-  // nanoPort.open(function (error) {
-  //   if (error) {
-  //     console.log('failed to open: '+error);
-  //   }
-  //   console.log('[SERIAL PORT] opened');
-  //   setInterval(sendAlive, 1000);
-  //   nanoPort.on('data', function(data) {
-  //     if (data==aliveText){
-  //       console.log('a: ', new Date());
-  //       //console.log("reset timer");
-  //       elapsed=0;
-  //     }
-  //   });
-  // });
+  var elapsed=0;
+  var self = this;
+  setInterval(function(){
+  elapsed++;
+    if (elapsed>30){
+      self.emit('shutdown');
+    }
+  }, 1000);
+
+  this.dowelBar = options.dowelBar ? options.dowelBar : '0033';
+  this.setPointId = options.setPointId ? options.setPointId : '0000';
+  this.distance = options.distance ? options.distance : '00.00';
+  this.tieBarId = options.tieBarId ? options.tieBarId : '0000';
+
+  var self = this;
+  nanoPort.open(function (error) {
+    if (error) {
+      console.log('failed to open: '+error);
+    }
+    console.log('[SERIAL PORT] opened');
+    nanoPort.on('data', function(data) {
+      var command = data.split('=');
+      console.log('data:', command);
+      if (command[0] == 'x'){
+        if(command[1] == 'flush'){
+          var msg = '';
+          msg += (0+'='+self.dowelBar+'\r');
+          msg += (1+'='+self.setPointId+'\r');
+          msg += (2+'='+self.distance+'\r');
+          msg += (3+'='+self.tieBarId+'\r');
+          console.log(msg);
+          nanoPort.write(msg);
+        }
+        else if(command[1] == 'alive'){
+          elapsed=0;
+        }
+      }
+    });
+    setInterval(sendAlive, 5000);
+  });
 };
 
-Arduino.prototype.display = function(index, data){
+Arduino.prototype = new EventEmitter();
+
+Arduino.prototype.display = function(index, data, alert){
   data = ''+data;
   result = displayPad.substring(0, displayPad.length - data.length) + data;
   result = result.substring(result.length - displayPad.length);
-  nanoPort.write(index+'='+result+'\r\n');
+  var sign = alert ? '*' : '!';
+  console.log('nanoWrite:', index+sign+result);
+  nanoPort.write(index+sign+result+'\r');
 };
 
 function sendAlive(){
-  nanoPort.write('aline=true\r\n');
+  nanoPort.write('x=alive\r');
 };
 
 

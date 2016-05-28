@@ -8,10 +8,37 @@ var redis       = require('redis');
 var Promise     = require('es6-promise').polyfill();
 var Transmitter = require('./transmitter.js');
 var Arduino     = require('./arduino.js');
-
+var PCF8591     = require('pcf8591');
+var exec = require('child_process').exec;
 var redisCli = redis.createClient();
+var arduino = new Arduino({});
+var pcf8591 = new PCF8591('/dev/i2c-1', 0x48, 0x01);
 
-var arduino = new Arduino();
+
+
+arduino.on('shutdown', function(){
+  var vSamples = 0;
+  pcf8591.readBytes(20,function(error, samples) {
+    for (var i=0; i<20; i++){
+      vSamples+=samples[i];
+    }
+    var voltage = Number(3.3/255.0*(vSamples/20)*9.4).toFixed(2);
+    console.log('VOLTAGE:', voltage);
+    DB.query('UPDATE powerLog SET ? ORDER BY id DESC LIMIT 1', {endTime: new Date(), voltage:voltage}, function(err, rows){
+      if(err){
+        console.log('[DB:ERROR] paverLOG', err);
+      }
+      if(rows){
+        console.log('SHUTDOWN');
+        exec("halt", function (error, stdout, stderr) {
+          if (error !== null) {
+            console.log('exec error: ' + error);
+          }
+        });
+      }
+    });
+  });
+});
 
 
 var DB = mysql.createConnection({
@@ -34,10 +61,21 @@ DB.connect(function(err) {
     DB: DB,
   })
 
+
+  DB.query('INSERT INTO powerLog SET ?', {beginTime: new Date()}, function(err, rows){
+    if(err){
+      console.log('[DB:ERROR] paverLOG', err);
+    }
+    if(rows){
+      console.log('BEGINTIME FIXED');
+    }
+  });
+
+
   transmitter.sync();
 })
 
-var cRadius = 0.22765;
+var cRadius = 0.0022765;
 var crawlerSpace = 10; //constant
 var positionFault = true;
 
@@ -75,7 +113,7 @@ GPS_port.on('data', function(line) {
     var gis = nmea.parse(line);
 
     if(gis.sentence == 'GLL' && gis.lat.length){
-      console.log('GIS:', gis.lat, '  ', gis.lon)
+      // console.log('GIS:', gis.lat, '  ', gis.lon)
       // dowelRecord.latitude = tieRecord.latitude = parseFloat(gis.lat);
       // dowelRecord.longitude = tieRecord.longitude = parseFloat(gis.lon);
     }
@@ -87,11 +125,11 @@ GPS_port.on('data', function(line) {
 
 
 var signalPin = {
-  dowelGear  : {mute:false, duration: 150},
-  dowelExist : {mute:false, duration: 150},
-  dowelDip   : {mute:false, duration: 150},
-  tieExist   : {mute:false, duration: 150},
-  tieDip     : {mute:false, duration: 150}
+  dowelGear  : {mute:false, duration: 20},
+  dowelExist : {mute:false, duration: 20},
+  dowelDip   : {mute:false, duration: 20},
+  tieExist   : {mute:false, duration: 20},
+  tieDip     : {mute:false, duration: 20}
 }
 
 
@@ -121,6 +159,13 @@ var tieDip = gpio.export(18, { // PIN:12 | CONN: 7
   ready: function(){console.log('ready');}
 });
 
+
+
+dowelGear.set();
+dowelExist.set();
+dowelDip.set();
+tieExist.set();
+tieDip.set();
 
 
 dowelGear.on("change", function(val){
@@ -154,6 +199,7 @@ dowelDip.on("change", function(val){
         }
         // transmitter.sync(rows);
         if(rows){
+          arduino.display(1, rows.insertId, dowelRecord.count != 33);
           dowelRecord = {
             distance: 0,
             count: 0,
@@ -165,9 +211,9 @@ dowelDip.on("change", function(val){
           };
           console.log('*** SET POINT RECORD SAVED!', rows.insertId);
           console.log('=======================================')
-          redisCli.set('dist_flush', '1');
-        }
 
+        }
+        redisCli.set('dist_flush', '1');
       });
     });
   }
@@ -187,22 +233,24 @@ tieDip.on("change", function(val){
     console.log('tie ', tieo++);
     muteSignal('tieDip');
     tieRecord.dipTime = new Date();
-    redisCli.get('dist', function(err, reply){
+    redisCli.get('tiedist', function(err, reply){
       tieRecord.distance = parseInt(reply)*cRadius;
       DB.query('INSERT INTO tiePoint SET ?', tieRecord, function(err, rows){
         if(err){
           console.log('[DB:ERROR] tiePoint insert', err);
         }
         if(rows){
-          var tieRecord = {
+          arduino.display(3, rows.insertId, !tieRecord.exist);
+          tieRecord = {
             distance: 0,
             exist: false,
             latitude: 0,
             longitude: 0,
             dipTime: null
           };
-          console.log('*   TIE RECORD SAVED!', rows.insertId);
-          console.log('---------------------------------------')
+          console.log('*  TIE RECORD SAVED!', rows.insertId);
+          console.log('---------------------------------------');
+          redisCli.set('tiedist_flush', '1');
         }
         // transmitter.sync(rows);
 
@@ -210,6 +258,14 @@ tieDip.on("change", function(val){
     });
    }
 });
+
+
+setInterval(function(){
+  redisCli.get('tiedist', function(err, reply){
+    console.log('tiedist', Number((parseInt(reply)*cRadius).toFixed(3)*1000)+'');
+    arduino.display(2, Math.abs(Number((parseInt(reply)*cRadius).toFixed(3)*1000))+'');
+  });
+}, 4000)
 
 function muteSignal(pin){
   signalPin[pin].mute = true;
