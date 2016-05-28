@@ -114,8 +114,8 @@ GPS_port.on('data', function(line) {
 
     if(gis.sentence == 'GLL' && gis.lat.length){
       // console.log('GIS:', gis.lat, '  ', gis.lon)
-      // dowelRecord.latitude = tieRecord.latitude = parseFloat(gis.lat);
-      // dowelRecord.longitude = tieRecord.longitude = parseFloat(gis.lon);
+      dowelRecord.latitude = tieRecord.latitude = parseFloat(gis.lat);
+      dowelRecord.longitude = tieRecord.longitude = parseFloat(gis.lon);
     }
   } catch (e) {
       console.log('err', e);
