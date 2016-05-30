@@ -21,7 +21,6 @@ Transmitter.prototype.postData = function(data){
 };
 
 Transmitter.prototype.sync = function(data){
-  console.log('Paver transmitter service launched');
   var self = this;
   if(data && ((new Date - this.lastTransmission) < 7000 )){
     setTimeout(function(){self.sync(data)}, 7000);
@@ -31,7 +30,7 @@ Transmitter.prototype.sync = function(data){
   axios.get(self.host + 'api/production/paverIndex/?deviceId=' + self.deviceId, {}).then(function(response){
     self.DB.query('SELECT * from `setPoint` WHERE CONVERT_TZ( `finishTime`, "+06:00", "+00:00" ) > ?', [response.data.updatedAt], function(err, rows) {
       if(err || rows.length == 0){
-        console.log('No Data Left:', err);
+        console.log('[SYNC ] No data left:', err);
         self.lastTransmission = new Date();
         setTimeout(function(){self.sync()}, self.syncTimeout);
       }
@@ -46,7 +45,7 @@ Transmitter.prototype.sync = function(data){
           setTimeout(function(){self.sync()}, self.syncTimeout);
         })
         .catch(function(error){
-          console.log('TRANSMISSION ERROR:', error);
+          console.log('[ERROR] Data trasnmission error:', error);
           self.lastTransmission = new Date();
           setTimeout(function(){self.sync()}, self.syncTimeout);
         });
@@ -54,7 +53,7 @@ Transmitter.prototype.sync = function(data){
     });
   })
   .catch(function(error){
-    console.log('connection error:', error);
+    console.log('[ERROR] Unable to connect '+self.host, error.status);
     self.lastTransmission = new Date();
     setTimeout(function(){self.sync()}, self.syncTimeout);
   });

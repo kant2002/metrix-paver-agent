@@ -31,44 +31,48 @@ function Arduino(options){
   var self = this;
   nanoPort.open(function (error) {
     if (error) {
-      console.log('failed to open: '+error);
+      console.log('[ERROR] Serial port connection failure: '+error);
     }
-    console.log('[SERIAL PORT] opened');
-    nanoPort.on('data', function(data) {
-      var command = data.split('=');
-      console.log('data:', command);
-      if (command[0] == 'x'){
-        if(command[1] == 'flush'){
-          var msg = '';
-          msg += (0+'='+self.dowelBar+'\r');
-          msg += (1+'='+self.setPointId+'\r');
-          msg += (2+'='+self.distance+'\r');
-          msg += (3+'='+self.tieBarId+'\r');
-          console.log(msg);
-          nanoPort.write(msg);
+    else{
+      console.log('[ OK  ] Serial port opened');
+      nanoPort.on('data', function(data) {
+        var command = data.split('=');
+        if (command[0] == 'x'){
+          if(command[1] == 'f'){
+            var msg = '';
+            msg += (0+'='+self.dowelBar+'\r');
+            msg += (1+'='+self.setPointId+'\r');
+            msg += (2+'='+self.distance+'\r');
+            msg += (3+'='+self.tieBarId+'\r');
+            nanoPort.write(msg);
+          }
+          else if(command[1] == 'a'){
+            elapsed=0;
+          }
         }
-        else if(command[1] == 'alive'){
-          elapsed=0;
-        }
-      }
-    });
-    setInterval(sendAlive, 5000);
+      });
+      setInterval(sendAlive, 5000);
+    }
   });
 };
 
 Arduino.prototype = new EventEmitter();
 
-Arduino.prototype.display = function(index, data, alert){
+Arduino.prototype.display = function(index, data){
   data = ''+data;
   result = displayPad.substring(0, displayPad.length - data.length) + data;
   result = result.substring(result.length - displayPad.length);
-  var sign = alert ? '*' : '!';
-  console.log('nanoWrite:', index+sign+result);
-  nanoPort.write(index+sign+result+'\r');
+  nanoPort.write(index+'!'+result+'\r');
+};
+
+Arduino.prototype.alert = function(index){
+  console.log('alarm', index+'*'+'\r');
+  nanoPort.write(index+'*'+'\r');
 };
 
 function sendAlive(){
-  nanoPort.write('x=alive\r');
+  console.log('alive');
+  nanoPort.write('x=a\r');
 };
 
 

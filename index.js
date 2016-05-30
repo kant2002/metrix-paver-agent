@@ -11,9 +11,36 @@ var Arduino     = require('./arduino.js');
 var PCF8591     = require('pcf8591');
 var exec = require('child_process').exec;
 var redisCli = redis.createClient();
+
 var arduino = new Arduino({});
 var pcf8591 = new PCF8591('/dev/i2c-1', 0x48, 0x01);
 
+
+const WHEEL_R = 0.0022765;
+var transmitter;
+var positionFault = true;
+
+var dowelRecord = {
+  distance: 0,
+  count: 0,
+  map: '',
+  latitude: 0,
+  longitude: 0,
+  startTime: null,
+  finishTime: null
+};
+
+var tieRecord = {
+  distance: 0,
+  exist: true,
+  latitude: 0,
+  longitude: 0,
+  dipTime: null
+};
+
+var dowelCurrent = 0;
+
+var tieBar = 0;
 
 
 arduino.on('shutdown', function(){
@@ -40,7 +67,6 @@ arduino.on('shutdown', function(){
   });
 });
 
-
 var DB = mysql.createConnection({
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 3306,
@@ -51,77 +77,57 @@ var DB = mysql.createConnection({
 
 DB.connect(function(err) {
   if (err) {
-    console.error('error connecting: ' + err.stack);
+    console.error('[ERROR] MYSQL connection failure: ' + err.stack);
     return;
   }
-  console.log('connected as id ' + DB.threadId);
-  var transmitter = new Transmitter({
+  console.log('[ OK  ] MYSQL connection estabilished :' + DB.threadId);
+  transmitter = new Transmitter({
     remoteOrigin: process.env.REMOTE_ORIGIN || 'http://metrix.kz/',
     deviceId:     process.env.DEVICE_ID,
-    DB: DB,
-  })
+    DB: DB
+  });
 
 
   DB.query('INSERT INTO powerLog SET ?', {beginTime: new Date()}, function(err, rows){
     if(err){
-      console.log('[DB:ERROR] paverLOG', err);
+      console.log('[ERROR] DB power log data insertion failure', err);
     }
     if(rows){
-      console.log('BEGINTIME FIXED');
+      console.log('[ OK  ] System start time recorded succesfully');
     }
   });
 
-
   transmitter.sync();
-})
-
-var cRadius = 0.0022765;
-var crawlerSpace = 10; //constant
-var positionFault = true;
-
-var dowelRecord = {
-  distance: 0,
-  count: 0,
-  map: '',
-  latitude: 0,
-  longitude: 0,
-  startTime: null,
-  finishTime: null
-};
-
-var tieRecord = {
-  distance: 0,
-  exist: false,
-  latitude: 0,
-  longitude: 0,
-  dipTime: null
-};
-
-var dowelCurrent = 0;
-
-var tieBar = 0;
-
-var GPS_port = new serialport.SerialPort('/dev/ttyACM0', {
-                baudrate: 9600,
-                parser: serialport.parsers.readline('\r\n')});
-
-var nmea_codes = ['GGA', 'GLL'];
-
-GPS_port.on('data', function(line) {
-  try {
-
-    var gis = nmea.parse(line);
-
-    if(gis.sentence == 'GLL' && gis.lat.length){
-      // console.log('GIS:', gis.lat, '  ', gis.lon)
-      dowelRecord.latitude = tieRecord.latitude = parseFloat(gis.lat);
-      dowelRecord.longitude = tieRecord.longitude = parseFloat(gis.lon);
-    }
-  } catch (e) {
-      console.log('err', e);
-  }
 });
 
+
+
+
+
+
+var GPS_port = new serialport.SerialPort('/dev/u_blox', { baudrate: 9600, parser: serialport.parsers.readline('\r\n')}, false);
+GPS_port.open(function (err) {
+  if (err) {
+    return console.log('[ERROR] Opening port GPS: ', err.message);
+  }
+
+  var nmea_codes = ['GGA', 'GLL'];
+
+  GPS_port.on('data', function(line) {
+    try {
+
+      var gis = nmea.parse(line);
+
+      if(gis.sentence == 'GLL' && gis.lat.length){
+        console.log('GIS:', gis.lat, '  ', gis.lon)
+        dowelRecord.latitude = tieRecord.latitude = parseFloat(gis.lat);
+        dowelRecord.longitude = tieRecord.longitude = parseFloat(gis.lon);
+      }
+    } catch (e) {
+        console.log('err', e);
+    }
+  });
+});
 
 
 var signalPin = {
@@ -135,28 +141,28 @@ var signalPin = {
 
 var dowelGear = gpio.export(8, { // PIN 24 | CONN 3
    direction: "in",
-   ready: function(){console.log('ready');}
+   ready: function(){console.log('[READY] Sensor 3 | DowelGear');}
 });
 
 
 var dowelExist = gpio.export(25, { // PIN 22 | CONN 4
   direction: "in",
-  ready: function(){console.log('ready');}
+  ready: function(){console.log('[READY] Sensor 4 | DowelExist');}
 });
 
 var dowelDip = gpio.export(24, { // PIN 18 | CONN 5
    direction: "in",
-   ready: function(){console.log('ready');}
+   ready: function(){console.log('[READY] Sensor 5 | DowelDip');}
 });
 
 var tieExist = gpio.export(23, { // PIN:16 | CONN: 6
   direction: "in",
-  ready: function(){console.log('ready');}
+  ready: function(){console.log('[READY] Sensor 6 | TieExist');}
 });
 
 var tieDip = gpio.export(18, { // PIN:12 | CONN: 7
   direction: "in",
-  ready: function(){console.log('ready');}
+  ready: function(){console.log('[READY] Sensor 7 | TieDip');}
 });
 
 
@@ -168,10 +174,20 @@ tieExist.set();
 tieDip.set();
 
 
+var gearTimeout;
+
+function gearStop(){
+  if(dowelRecord.count < 33){
+    console.log('[ALARM] '+(33-dowelRecord.count)+' bar(s) missing')
+    arduino.alert(1);
+  }
+}
+
 dowelGear.on("change", function(val){
   if(val == 0){
-    // dowlRecord.dowelMap += dowelCurrent;
-    // dowelCurrent = 0;
+    if(!dowelRecord.startTime) dowelRecord.startTime = new Date();
+    clearTimeout(gearTimeout);
+    gearTimeout = setTimeout(gearStop, 3000);
   }
 });
 
@@ -188,18 +204,16 @@ dowelExist.on("change", function(val){
 dowelDip.on("change", function(val){
   if((val == 0) && (signalPin.dowelDip.mute == false)){
     muteSignal('dowelDip');
-    console.log('Distance: ', dowelRecord.distance);
-    console.log('Dowels:   ', dowelRecord.dowelMap);
     dowelRecord.finishTime = new Date();
     redisCli.get('dist', function(err, reply){
-      dowelRecord.distance = parseInt(reply)*cRadius;
+      dowelRecord.distance = parseInt(reply)*WHEEL_R;
       DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
         if(err){
           console.log('[DB:ERROR] setPoint insert', err);
         }
         // transmitter.sync(rows);
         if(rows){
-          arduino.display(1, rows.insertId, dowelRecord.count != 33);
+          arduino.display(1, rows.insertId);
           dowelRecord = {
             distance: 0,
             count: 0,
@@ -227,20 +241,30 @@ tieExist.on("change", function(val){
   }
 });
 
-var tieo = 0;
+
+function tieCheck(){
+  if(!tieRecord.exist){
+    console.log('[ALARM] Tie bar does not exist');
+    arduino.alert(3);
+    //Alert
+  }
+}
+
 tieDip.on("change", function(val){
   if((val == 0) && (signalPin.tieDip.mute == false)){
-    console.log('tie ', tieo++);
     muteSignal('tieDip');
+
+    setTimeout(tieCheck, 3000);
+
     tieRecord.dipTime = new Date();
     redisCli.get('tiedist', function(err, reply){
-      tieRecord.distance = parseInt(reply)*cRadius;
+      tieRecord.distance = parseInt(reply)*WHEEL_R;
       DB.query('INSERT INTO tiePoint SET ?', tieRecord, function(err, rows){
         if(err){
           console.log('[DB:ERROR] tiePoint insert', err);
         }
         if(rows){
-          arduino.display(3, rows.insertId, !tieRecord.exist);
+          arduino.display(3, rows.insertId);
           tieRecord = {
             distance: 0,
             exist: false,
@@ -262,8 +286,7 @@ tieDip.on("change", function(val){
 
 setInterval(function(){
   redisCli.get('tiedist', function(err, reply){
-    console.log('tiedist', Number((parseInt(reply)*cRadius).toFixed(3)*1000)+'');
-    arduino.display(2, Math.abs(Number((parseInt(reply)*cRadius).toFixed(3)*1000))+'');
+    arduino.display(2, Math.abs(Number((parseInt(reply)*WHEEL_R).toFixed(3)*1000))+'');
   });
 }, 4000)
 
