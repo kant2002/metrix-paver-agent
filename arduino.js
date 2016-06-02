@@ -71,7 +71,6 @@ Arduino.prototype.alert = function(index){
 };
 
 function sendAlive(){
-  console.log('alive');
   nanoPort.write('x=a\r');
 };
 
