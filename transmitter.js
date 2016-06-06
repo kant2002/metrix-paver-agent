@@ -29,7 +29,7 @@ Transmitter.prototype.sync = function(data){
 
   axios.get(self.host + 'api/production/paverIndex/?deviceId=' + self.deviceId, {}).then(function(response){
     // console.log('response::', response);
-    self.DB.query('SELECT * from `setPoint` WHERE CONVERT_TZ( `finishTime`, "+06:00", "+00:00" ) > ?', [response.data.updatedAt], function(err, setPoints) {
+    self.DB.query('SELECT * from `setPoint` WHERE CONVERT_TZ( `finishTime`, "+06:00", "+00:00" ) > ? LIMIT 10', [response.data.updatedAt], function(err, setPoints) {
       if(err || setPoints.length == 0){
         console.log('[SYNC ] No data left:', err);
         self.lastTransmission = new Date();
@@ -37,7 +37,7 @@ Transmitter.prototype.sync = function(data){
       }
       else{
 
-        self.DB.query('SELECT * from `tiePoint` WHERE CONVERT_TZ( `dipTime`, "+06:00", "+00:00" ) > ?', [response.data.updatedAt], function(err, tiePoints) {
+        self.DB.query('SELECT * from `tiePoint` WHERE CONVERT_TZ( `dipTime`, "+06:00", "+00:00" ) > ? LIMIT 50', [response.data.updatedAt], function(err, tiePoints) {
           if(err || tiePoints.length == 0){
             console.log('[SYNC ] No data left:', err);
             self.lastTransmission = new Date();

@@ -16,15 +16,6 @@ var arduino = new Arduino({});
 var pcf8591 = new PCF8591('/dev/i2c-1', 0x48, 0x01);
 
 
-var signalPin = {
-  dowelGear  : {mute:false, duration: 20},
-  dowelExist : {mute:false, duration: 20},
-  dowelDip   : {mute:false, duration: 20},
-  tieExist   : {mute:false, duration: 20},
-  tieDip     : {mute:false, duration: 20}
-}
-
-
 const WHEEL_R = 0.0022765;
 var transmitter;
 var positionFault = true;
@@ -48,6 +39,10 @@ var tieRecord = {
   dipTime: null
 };
 
+var signalPin = {
+    dowelGear : {mute: false, duration: 20},
+    dowelExist
+};
 var dowelCurrent = 0;
 
 var tieBar = 0;
@@ -146,6 +141,15 @@ function initialize(){
       }
     });
   });
+
+
+  var signalPin = {
+    dowelGear  : {mute:false, duration: 20},
+    dowelExist : {mute:false, duration: 20},
+    dowelDip   : {mute:false, duration: 20},
+    tieExist   : {mute:false, duration: 20},
+    tieDip     : {mute:false, duration: 20}
+  }
 
 
   var dowelGear = gpio.export(8, { // PIN 24 | CONN 3
