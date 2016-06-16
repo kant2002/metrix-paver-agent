@@ -2,13 +2,13 @@ var axios = require("axios");
 
 
 function Transmitter(options){
-  this.syncTimeout = 30000;
+  this.syncTimeout = 20000;
   this.syncLoop = null;
   this.host = options.remoteOrigin;
   this.deviceId = options.deviceId;
   this.scopeId = options.scopeId;
   this.DB = options.DB;
-  this.lastTransmission = null;
+  this.lastTransmission = new Date();
 };
 
 Transmitter.prototype.getScope = function(){
@@ -54,6 +54,9 @@ Transmitter.prototype.sync = function(data){
               point.scopeId = response.data.id;
               delete point.id;
             });
+
+            console.log('sp:', setPoints.length);
+            console.log('tp:', tiePoints.length);
 
             axios.post(self.host + 'api/production/paverTransmit', {data:[setPoints, tiePoints]}).then(function(result){
               console.log('['+result.data.code+']', result.data.msg)
