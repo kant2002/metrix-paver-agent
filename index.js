@@ -52,6 +52,8 @@ var dowelCurrent = 0;
 
 var tieBar = 0;
 
+var systemHalted = false;
+
 var DB = mysql.createConnection({
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 3306,
@@ -75,27 +77,31 @@ function initialize(){
 
   arduino.on('shutdown', function(){
     var vSamples = 0;
-    setTimeout(function(){
-      console.log('['+moment().format('DD MMM YYYY HH:mm')+'] System halting');
-      console.log('-=============================================================-')
-      exec("halt", function (error, stdout, stderr) {
-        if (error !== null) {
-          console.log('exec error: ' + error);
+
+    if(!systemHalted){
+      setTimeout(function(){
+        console.log('['+moment().format('DD MMM YYYY HH:mm')+'] System halting');
+        console.log('-=============================================================-')
+        exec("halt", function (error, stdout, stderr) {
+          if (error !== null) {
+            console.log('exec error: ' + error);
+          }
+        });
+      },7000);
+      pcf8591.readBytes(20,function(error, samples) {
+        for (var i=0; i<20; i++){
+          vSamples+=samples[i];
         }
+        var voltage = Number(3.3/255.0*(vSamples/20)*9.4).toFixed(2);
+        console.log('[Voltage]:', voltage);
+        DB.query('UPDATE powerLog SET ? ORDER BY id DESC LIMIT 1', {endTime: new Date(), voltage:voltage}, function(err, rows){
+          if(err){
+            console.log('[DB:ERROR] paverLOG', err);
+          }
+        });
       });
-    },7000);
-    pcf8591.readBytes(20,function(error, samples) {
-      for (var i=0; i<20; i++){
-        vSamples+=samples[i];
-      }
-      var voltage = Number(3.3/255.0*(vSamples/20)*9.4).toFixed(2);
-      console.log('[Voltage]:', voltage);
-      DB.query('UPDATE powerLog SET ? ORDER BY id DESC LIMIT 1', {endTime: new Date(), voltage:voltage}, function(err, rows){
-        if(err){
-          console.log('[DB:ERROR] paverLOG', err);
-        }
-      });
-    });
+      systemHalted = true;
+    }
   });
 
 
