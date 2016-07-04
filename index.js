@@ -19,9 +19,9 @@ var pcf8591 = new PCF8591('/dev/i2c-1', 0x48, 0x01);
 var signalPin = {
   dowelGear  : {mute:false, duration: 20},
   dowelExist : {mute:false, duration: 20},
-  dowelDip   : {mute:false, duration: 20},
-  tieExist   : {mute:false, duration: 20},
-  tieDip     : {mute:false, duration: 20}
+  dowelDip   : {mute:false, duration: 5000},
+  tieExist   : {mute:false, duration: 2000},
+  tieDip     : {mute:false, duration: 2000}
 }
 
 
@@ -75,6 +75,8 @@ function initialize(){
   });
 
 
+
+
   arduino.on('shutdown', function(){
     var vSamples = 0;
 
@@ -102,6 +104,16 @@ function initialize(){
       });
       systemHalted = true;
     }
+  });
+
+
+  process.on('SIGINT', function() {
+    console.log('SIGINT . . .');
+    DB.destroy();
+    redisCli.end(true);
+    setTimeout(function() {
+      process.exit(0);
+    }, 300);
   });
 
 
@@ -220,26 +232,40 @@ function initialize(){
       dowelRecord.finishTime = new Date();
       redisCli.get('dist', function(err, reply){
         dowelRecord.distance = parseInt(reply)*WHEEL_R;
-        DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
-          if(err){
-            console.log('[DB:ERROR] setPoint insert', err);
-          }
-          // transmitter.sync(rows);
-          if(rows){
-            arduino.display(1, rows.insertId);
-            dowelRecord = {
-              distance: 0,
-              count: 0,
-              map: '',
-              latitude: 0,
-              longitude: 0,
-              startTime: null,
-              finishTime: null
-            };
-            console.log('['+moment().format('DD MMM YYYY HH:mm')+'] [Record] Set point saved: '+ rows.insertId);
-          }
+        if(dowelRecord.distance > 1){
+          DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
+            if(err){
+              console.log('[DB:ERROR] setPoint insert', err);
+            }
+            // transmitter.sync(rows);
+            if(rows){
+              arduino.display(1, rows.insertId);
+              dowelRecord = {
+                distance: 0,
+                count: 0,
+                map: '',
+                latitude: 0,
+                longitude: 0,
+                startTime: null,
+                finishTime: null
+              };
+              console.log('['+moment().format('DD MMM YYYY HH:mm')+'] [Record] Set point saved: '+ rows.insertId);
+            }
+            redisCli.set('dist_flush', '1');
+          });
+        }
+        else{
+          dowelRecord = {
+            distance: 0,
+            count: 0,
+            map: '',
+            latitude: 0,
+            longitude: 0,
+            startTime: null,
+            finishTime: null
+          };
           redisCli.set('dist_flush', '1');
-        });
+        }
       });
     }
   });
@@ -262,31 +288,41 @@ function initialize(){
 
   tieDip.on("change", function(val){
     if((val == 0) && (signalPin.tieDip.mute == false)){
-      muteSignal('tieDip');
-
-      setTimeout(tieCheck, 11000);
-
       tieRecord.dipTime = new Date();
+      muteSignal('tieDip');
+      setTimeout(tieCheck, 11000);
       redisCli.get('tiedist', function(err, reply){
         tieRecord.distance = parseInt(reply)*WHEEL_R;
-        DB.query('INSERT INTO tiePoint SET ?', tieRecord, function(err, rows){
-          if(err){
-            console.log('[DB:ERROR] tiePoint insert', err);
-          }
-          if(rows){
-            arduino.display(3, rows.insertId);
-            tieRecord = {
-              distance: 0,
-              exist: false,
-              latitude: 0,
-              longitude: 0,
-              dipTime: null
-            };
-            console.log('['+moment().format('DD MMM YYYY HH:mm')+'] [Record] Tie bar saved: '+ rows.insertId);
-            redisCli.set('tiedist_flush', '1');
-          }
-          // transmitter.sync(rows);
-        });
+        if(tieRecord.distance > 0.2){
+          DB.query('INSERT INTO tiePoint SET ?', tieRecord, function(err, rows){
+            if(err){
+              console.log('[DB:ERROR] tiePoint insert', err);
+            }
+            if(rows){
+              arduino.display(3, rows.insertId);
+              tieRecord = {
+                distance: 0,
+                exist: false,
+                latitude: 0,
+                longitude: 0,
+                dipTime: null
+              };
+              console.log('['+moment().format('DD MMM YYYY HH:mm')+'] [Record] Tie bar saved: '+ rows.insertId);
+              redisCli.set('tiedist_flush', '1');
+            }
+            // transmitter.sync(rows);
+          });
+        }
+        else{
+          tieRecord = {
+            distance: 0,
+            exist: false,
+            latitude: 0,
+            longitude: 0,
+            dipTime: null
+          };
+          redisCli.set('tiedist_flush', '1');
+        }
       });
      }
   });
