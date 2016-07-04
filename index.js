@@ -96,7 +96,7 @@ function initialize(){
         }
         var voltage = Number(3.3/255.0*(vSamples/20)*9.4).toFixed(2);
         console.log('[Voltage]:', voltage);
-        DB.query('UPDATE powerLog SET ? ORDER BY id DESC LIMIT 1', {endTime: new Date(), voltage:voltage}, function(err, rows){
+        DB.query('UPDATE powerLog SET ? ORDER BY id DESC LIMIT 1', {endTime: moment().utc().format(), voltage:voltage}, function(err, rows){
           if(err){
             console.log('[DB:ERROR] paverLOG', err);
           }
@@ -131,7 +131,7 @@ function initialize(){
     });
 
 
-    DB.query('INSERT INTO powerLog SET ?', {beginTime: new Date()}, function(err, rows){
+    DB.query('INSERT INTO powerLog SET ?', {beginTime: moment().utc().format()}, function(err, rows){
       if(err){
         console.log('[ERROR] DB power log data insertion failure', err);
       }
@@ -211,7 +211,7 @@ function initialize(){
 
   dowelGear.on("change", function(val){
     if(val == 0){
-      if(!dowelRecord.startTime) dowelRecord.startTime = new Date();
+      if(!dowelRecord.startTime) dowelRecord.startTime = moment().utc().format();
       clearTimeout(gearTimeout);
       gearTimeout = setTimeout(gearStop, 4000);
     }
@@ -229,7 +229,7 @@ function initialize(){
   dowelDip.on("change", function(val){
     if((val == 0) && (signalPin.dowelDip.mute == false)){
       muteSignal('dowelDip');
-      dowelRecord.finishTime = new Date();
+      dowelRecord.finishTime = moment().utc().format();
       redisCli.get('dist', function(err, reply){
         dowelRecord.distance = parseInt(reply)*WHEEL_R;
         if(dowelRecord.distance > 1){
@@ -288,7 +288,7 @@ function initialize(){
 
   tieDip.on("change", function(val){
     if((val == 0) && (signalPin.tieDip.mute == false)){
-      tieRecord.dipTime = new Date();
+      tieRecord.dipTime = moment().utc().format();
       muteSignal('tieDip');
       setTimeout(tieCheck, 11000);
       redisCli.get('tiedist', function(err, reply){
