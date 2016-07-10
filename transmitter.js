@@ -36,6 +36,7 @@ Transmitter.prototype.extract = function(scopeId, period){
         setPoints = setPointRecords.map(function(point){
           point.scopeId = scopeId;
           delete point.id;
+          return point;
         });
       }
       self.DB.query('SELECT * from `tiePoint` WHERE `dipTime` >= ? AND `dipTime` < ?', [start, finish], function(err, tiePointRecords) {
@@ -45,6 +46,7 @@ Transmitter.prototype.extract = function(scopeId, period){
             tiePoints = tiePointRecords.map(function(point){
               point.scopeId = scopeId;
               delete point.id;
+              return point;
             });
           }
 
@@ -52,8 +54,8 @@ Transmitter.prototype.extract = function(scopeId, period){
             var spTime = (setPoints[setPoints.length-1]) ? setPoints[setPoints.length-1].finishTime : null;
             var tpTime = (tiePoints[tiePoints.length-1]) ? tiePoints[tiePoints.length-1].dipTime : null;
             var updatedAt;
-            console.log('spTime:', setPoints[setPoints.length-1]);
-            console.log('tpTime:', tiePoints[tiePoints.length-1]);
+            console.log('spTime:', spTime);
+            console.log('tpTime:', tpTime);
             if(spTime>tpTime) {updatedAt = spTime;}
             else {updatedAt = tpTime ? tpTime : spTime;}
 
