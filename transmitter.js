@@ -32,25 +32,28 @@ Transmitter.prototype.extract = function(scopeId, period){
   self.DB.query('SELECT * from `setPoint` WHERE `finishTime` >= ? AND `finishTime` < ?', [start, finish], function(err, setPointRecords) {
     if(err){ setTimeout(function(){self.sync()}, self.syncTimeout);}
     else{
-      setPoints = setPointRecords.map(function(point){
-        point.scopeId = scopeId;
-        delete point.id;
-      });
-
+      if(Object.prototype.toString.call(setPointRecords) === '[object Array]'){
+        setPoints = setPointRecords.map(function(point){
+          point.scopeId = scopeId;
+          delete point.id;
+        });
+      }
       self.DB.query('SELECT * from `tiePoint` WHERE `dipTime` >= ? AND `dipTime` < ?', [start, finish], function(err, tiePointRecords) {
         if(err){setTimeout(function(){self.sync()}, self.syncTimeout);}
         else{
-          tiePoints = tiePointRecords.map(function(point){
-            point.scopeId = scopeId;
-            delete point.id;
-          });
+          if(Object.prototype.toString.call(tiePointRecords) === '[object Array]'){
+            tiePoints = tiePointRecords.map(function(point){
+              point.scopeId = scopeId;
+              delete point.id;
+            });
+          }
 
           if(setPoints.length || tiePoints.length){
             var spTime = (setPoints[setPoints.length-1]) ? setPoints[setPoints.length-1].finishTime : null;
             var tpTime = (tiePoints[tiePoints.length-1]) ? tiePoints[tiePoints.length-1].dipTime : null;
             var updatedAt;
-            console.log('spTime:', spTime);
-            console.log('tpTime:', tpTime);
+            console.log('spTime:', setPoints[setPoints.length-1]);
+            console.log('tpTime:', tiePoints[tiePoints.length-1]);
             if(spTime>tpTime) {updatedAt = spTime;}
             else {updatedAt = tpTime ? tpTime : spTime;}
 
