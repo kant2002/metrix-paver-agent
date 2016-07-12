@@ -28,20 +28,20 @@ Transmitter.prototype.extract = function(scopeId, period){
   var start  = moment(period).utc().format();
   var finish = moment(period).utc().add(30, 'minute').format();
 
-  console.log('SELECT * FROM `setPoint` WHERE `finishTime` > '+start+' AND `finishTime` < '+finish);
+  // console.log('SELECT * FROM `setPoint` WHERE `finishTime` > '+start+' AND `finishTime` < '+finish);
   self.DB.query('SELECT * FROM `setPoint` WHERE `finishTime` > ? AND `finishTime` < ?', [start, finish], function(err, setPointRecords) {
     if(err){ setTimeout(function(){self.sync()}, self.syncTimeout);}
     else{
       if(Object.prototype.toString.call(setPointRecords) === '[object Array]'){
         setPoints = setPointRecords.map(function(point){
           point.scopeId = scopeId;
-          point.startTime = point.startTime : moment(point.startTime).utc().add(6, 'hour').format() : null;
-          point.finishTime = point.startTime : moment(point.finishTime).utc().add(6, 'hour').format() : null;
+          point.startTime = point.startTime ? moment(point.startTime).utc().add(6, 'hour').format() : null;
+          point.finishTime = point.startTime ? moment(point.finishTime).utc().add(6, 'hour').format() : null;
           delete point.id;
           return point;
         });
       }
-      console.log('SELECT * FROM `tiePoint` WHERE `dipTime` > '+start+' AND `dipTime` < '+finish)
+      // console.log('SELECT * FROM `tiePoint` WHERE `dipTime` > '+start+' AND `dipTime` < '+finish)
       self.DB.query('SELECT * FROM `tiePoint` WHERE `dipTime` > ? AND `dipTime` < ?', [start, finish], function(err, tiePointRecords) {
         if(err){setTimeout(function(){self.sync()}, self.syncTimeout);}
         else{
