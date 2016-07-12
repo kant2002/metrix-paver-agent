@@ -36,8 +36,8 @@ Transmitter.prototype.extract = function(scopeId, period){
       if(Object.prototype.toString.call(setPointRecords) === '[object Array]'){
         setPoints = setPointRecords.map(function(point){
           point.scopeId = scopeId;
-          point.startTime = moment(point.startTime).utc().add(6, 'hours').format();
-          point.finishTime = moment(point.finishTime).utc().add(6, 'hours').format();
+          point.startTime = moment(point.startTime).add(6, 'hour').format();
+          point.finishTime = moment(point.finishTime).add(6, 'hour').format();
           delete point.id;
           return point;
         });
@@ -49,7 +49,7 @@ Transmitter.prototype.extract = function(scopeId, period){
           if(Object.prototype.toString.call(tiePointRecords) === '[object Array]'){
             tiePoints = tiePointRecords.map(function(point){
               point.scopeId = scopeId;
-              point.dipTime = moment(point.dipTime).utc().add(6, 'hours').format(); 
+              point.dipTime = moment(point.dipTime).add(6, 'hour').format();
               delete point.id;
               return point;
             });
@@ -62,7 +62,7 @@ Transmitter.prototype.extract = function(scopeId, period){
             console.log('spTime:', spTime);
             console.log('tpTime:', tpTime);
             if(spTime>tpTime) {updatedAt = spTime;}
-            else {updatedAt = tpTime ? moment(tpTime).utc().format() : moment(spTime).utc().format();}
+            else {updatedAt = tpTime ? moment(tpTime).format() : moment(spTime).format();}
 
             console.log('[TRANSMIT] SP:'+setPoints.length+' TP:'+tiePoints.length);
             axios.post(self.host + 'api/production/paverTransmit', {data:{setPoints: setPoints, tiePoints: tiePoints, updatedAt: updatedAt, scopeId: scopeId}}).then(function(result){
