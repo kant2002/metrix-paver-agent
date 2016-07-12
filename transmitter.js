@@ -9,7 +9,6 @@ function Transmitter(options){
   this.deviceId = options.deviceId;
   this.scopeId = options.scopeId;
   this.DB = options.DB;
-  this.lastTransmission = new Date();
 };
 
 Transmitter.prototype.getScope = function(){
@@ -36,8 +35,8 @@ Transmitter.prototype.extract = function(scopeId, period){
       if(Object.prototype.toString.call(setPointRecords) === '[object Array]'){
         setPoints = setPointRecords.map(function(point){
           point.scopeId = scopeId;
-          point.startTime = moment(point.startTime).utc().add(6, 'hour').format();
-          point.finishTime = moment(point.finishTime).utc().add(6, 'hour').format();
+          point.startTime = point.startTime : moment(point.startTime).utc().add(6, 'hour').format() : null;
+          point.finishTime = point.startTime : moment(point.finishTime).utc().add(6, 'hour').format() : null;
           delete point.id;
           return point;
         });
@@ -49,7 +48,7 @@ Transmitter.prototype.extract = function(scopeId, period){
           if(Object.prototype.toString.call(tiePointRecords) === '[object Array]'){
             tiePoints = tiePointRecords.map(function(point){
               point.scopeId = scopeId;
-              point.dipTime = moment(point.dipTime).utc().add(6, 'hour').format(); 
+              point.dipTime = moment(point.dipTime).utc().add(6, 'hour').format();
               delete point.id;
               return point;
             });
@@ -62,17 +61,15 @@ Transmitter.prototype.extract = function(scopeId, period){
             console.log('spTime:', spTime);
             console.log('tpTime:', tpTime);
             if(spTime>tpTime) {updatedAt = spTime;}
-            else {updatedAt = tpTime ? moment(tpTime).utc().format() : moment(spTime).utc().format();}
+            else {updatedAt = tpTime ? tpTime : spTime}
 
             console.log('[TRANSMIT] SP:'+setPoints.length+' TP:'+tiePoints.length);
             axios.post(self.host + 'api/production/paverTransmit', {data:{setPoints: setPoints, tiePoints: tiePoints, updatedAt: updatedAt, scopeId: scopeId}}).then(function(result){
               console.log('['+result.data.code+']', result.data.msg)
-              self.lastTransmission = new Date();
               setTimeout(function(){self.sync()}, self.syncTimeout);
             })
             .catch(function(error){
               console.log('[ERROR] Data trasnmission error:', error);
-              self.lastTransmission = new Date();
               setTimeout(function(){self.sync()}, self.syncTimeout);
             });
           }
@@ -148,7 +145,6 @@ Transmitter.prototype.sync = function(data){
   })
   .catch(function(error){
     console.log('[ERROR] Unable to connect '+self.host, error.status);
-    self.lastTransmission = new Date();
     setTimeout(function(){self.sync()}, self.syncTimeout);
   });
 };
