@@ -36,6 +36,8 @@ Transmitter.prototype.extract = function(scopeId, period){
       if(Object.prototype.toString.call(setPointRecords) === '[object Array]'){
         setPoints = setPointRecords.map(function(point){
           point.scopeId = scopeId;
+          point.startTime = moment(point.startTime).utc().add(6, 'hours').format();
+          point.finishTime = moment(point.finishTime).utc().add(6, 'hours').format();
           delete point.id;
           return point;
         });
@@ -47,6 +49,7 @@ Transmitter.prototype.extract = function(scopeId, period){
           if(Object.prototype.toString.call(tiePointRecords) === '[object Array]'){
             tiePoints = tiePointRecords.map(function(point){
               point.scopeId = scopeId;
+              point.dipTime = moment(point.dipTime).utc().add(6, 'hours').format(); 
               delete point.id;
               return point;
             });
