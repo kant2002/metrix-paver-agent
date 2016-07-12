@@ -140,7 +140,7 @@ function initialize(){
       }
     });
 
-    transmitter.sync();
+    // transmitter.sync();
   });
 
 
