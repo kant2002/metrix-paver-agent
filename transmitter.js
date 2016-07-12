@@ -5,10 +5,12 @@ var moment = require('moment');
 function Transmitter(options){
   this.syncTimeout = 20000;
   this.syncLoop = null;
+  this.extractLoop = null;
   this.host = options.remoteOrigin;
   this.deviceId = options.deviceId;
   this.scopeId = options.scopeId;
   this.DB = options.DB;
+
 };
 
 Transmitter.prototype.getScope = function(){
@@ -30,7 +32,10 @@ Transmitter.prototype.extract = function(scopeId, period){
 
   // console.log('SELECT * FROM `setPoint` WHERE `finishTime` > '+start+' AND `finishTime` < '+finish);
   self.DB.query('SELECT * FROM `setPoint` WHERE `finishTime` > ? AND `finishTime` < ?', [start, finish], function(err, setPointRecords) {
-    if(err){ setTimeout(function(){self.sync()}, self.syncTimeout);}
+    if(err){
+      clearTimeout(self.syncLoop);
+      self.syncLoop = setTimeout(function(){self.sync()}, self.syncTimeout);
+    }
     else{
       if(Object.prototype.toString.call(setPointRecords) === '[object Array]'){
         setPoints = setPointRecords.map(function(point){
@@ -43,7 +48,10 @@ Transmitter.prototype.extract = function(scopeId, period){
       }
       // console.log('SELECT * FROM `tiePoint` WHERE `dipTime` > '+start+' AND `dipTime` < '+finish)
       self.DB.query('SELECT * FROM `tiePoint` WHERE `dipTime` > ? AND `dipTime` < ?', [start, finish], function(err, tiePointRecords) {
-        if(err){setTimeout(function(){self.sync()}, self.syncTimeout);}
+        if(err){
+          clearTimeout(self.syncLoop);
+          self.syncLoop = setTimeout(function(){self.sync()}, self.syncTimeout);
+        }
         else{
           if(Object.prototype.toString.call(tiePointRecords) === '[object Array]'){
             tiePoints = tiePointRecords.map(function(point){
@@ -65,20 +73,24 @@ Transmitter.prototype.extract = function(scopeId, period){
 
             console.log('[TRANSMIT] SP:'+setPoints.length+' TP:'+tiePoints.length);
             axios.post(self.host + 'api/production/paverTransmit', {data:{setPoints: setPoints, tiePoints: tiePoints, updatedAt: updatedAt, scopeId: scopeId}}).then(function(result){
-              console.log('['+result.data.code+']', result.data.msg)
-              setTimeout(function(){self.sync()}, self.syncTimeout);
+              console.log('['+result.data.code+']', result.data.msg);
+              clearTimeout(self.syncLoop);
+              self.syncLoop = setTimeout(function(){self.sync()}, self.syncTimeout);
             })
             .catch(function(error){
               console.log('[ERROR] Data trasnmission error:', error);
-              setTimeout(function(){self.sync()}, self.syncTimeout);
+              clearTimeout(self.syncLoop);
+              self.syncLoop = setTimeout(function(){self.sync()}, self.syncTimeout);
             });
           }
           else if(finish < moment().format()){
-            setTimeout(function(){self.extract(scopeId, finish)}, 500);
+            clearTimeout(self.extractLoop);
+            self.extractLoop = setTimeout(function(){self.extract(scopeId, finish)}, 500);
           }
           else {
             //already up to date
-            setTimeout(function(){self.sync()}, self.syncTimeout);
+            clearTimeout(self.syncLoop);
+            self.syncLoop = setTimeout(function(){self.sync()}, self.syncTimeout);
           }
         }
       });
@@ -98,7 +110,8 @@ Transmitter.prototype.sync = function(data){
   console.log('[SYNC]', moment().format());
 
   axios.get(self.host + 'api/production/paverIndex/?deviceId=' + self.deviceId, {}).then(function(response){
-    self.extract(response.data.id, response.data.updatedAt);
+    clearTimeout(self.extractLoop);
+    self.extractLoop = self.extract(response.data.id, response.data.updatedAt);
     // console.log('response::', response);
 
     // self.DB.query('SELECT * from `setPoint` WHERE CONVERT_TZ( `finishTime`, "+06:00", "+00:00" ) > ? LIMIT 10', [response.data.updatedAt], function(err, setPoints) {
@@ -145,7 +158,8 @@ Transmitter.prototype.sync = function(data){
   })
   .catch(function(error){
     console.log('[ERROR] Unable to connect '+self.host, error.status);
-    setTimeout(function(){self.sync()}, self.syncTimeout);
+    clearTimeout(self.syncLoop);
+    self.syncLoop = setTimeout(function(){self.sync()}, self.syncTimeout);
   });
 };
 
