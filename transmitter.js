@@ -26,8 +26,8 @@ Transmitter.prototype.extract = function(scopeId, period){
   var setPoints = [];
   var tiePoints = [];
   var scopeId = scopeId;
-  var start  = moment(period).format();
-  var finish = moment(period).add(30, 'minute').format();
+  var start  = moment(period).utc().format();
+  var finish = moment(period).utc().add(30, 'minute').format();
 
   console.log('SELECT * FROM `setPoint` WHERE `finishTime` > '+start+' AND `finishTime` < '+finish);
   self.DB.query('SELECT * FROM `setPoint` WHERE `finishTime` > ? AND `finishTime` < ?', [start, finish], function(err, setPointRecords) {
