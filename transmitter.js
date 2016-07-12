@@ -59,7 +59,7 @@ Transmitter.prototype.extract = function(scopeId, period){
             console.log('spTime:', spTime);
             console.log('tpTime:', tpTime);
             if(spTime>tpTime) {updatedAt = spTime;}
-            else {updatedAt = tpTime ? tpTime : spTime;}
+            else {updatedAt = tpTime ? moment(tpTime).utc().format() : moment(spTime).utc().format();}
 
             console.log('[TRANSMIT] SP:'+setPoints.length+' TP:'+tiePoints.length);
             axios.post(self.host + 'api/production/paverTransmit', {data:{setPoints: setPoints, tiePoints: tiePoints, updatedAt: updatedAt, scopeId: scopeId}}).then(function(result){
