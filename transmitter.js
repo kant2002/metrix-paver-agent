@@ -26,11 +26,11 @@ Transmitter.prototype.extract = function(scopeId, period){
   var setPoints = [];
   var tiePoints = [];
   var scopeId = scopeId;
-  var start  = moment(period).utc().format();
-  var finish = moment(period).add(30, 'minute').utc().format();
+  var start  = moment(period).format();
+  var finish = moment(period).add(30, 'minute').format();
 
-  console.log('SELECT * FROM `setPoint` WHERE `finishTime` >= '+start+' AND `finishTime` < '+finish);
-  self.DB.query('SELECT * FROM `setPoint` WHERE `finishTime` >= ? AND `finishTime` < ?', [start, finish], function(err, setPointRecords) {
+  console.log('SELECT * FROM `setPoint` WHERE `finishTime` > '+start+' AND `finishTime` < '+finish);
+  self.DB.query('SELECT * FROM `setPoint` WHERE `finishTime` > ? AND `finishTime` < ?', [start, finish], function(err, setPointRecords) {
     if(err){ setTimeout(function(){self.sync()}, self.syncTimeout);}
     else{
       if(Object.prototype.toString.call(setPointRecords) === '[object Array]'){
@@ -40,8 +40,8 @@ Transmitter.prototype.extract = function(scopeId, period){
           return point;
         });
       }
-      console.log('SELECT * FROM `tiePoint` WHERE `dipTime` >= '+start+' AND `dipTime` < '+finish)
-      self.DB.query('SELECT * FROM `tiePoint` WHERE `dipTime` >= ? AND `dipTime` < ?', [start, finish], function(err, tiePointRecords) {
+      console.log('SELECT * FROM `tiePoint` WHERE `dipTime` > '+start+' AND `dipTime` < '+finish)
+      self.DB.query('SELECT * FROM `tiePoint` WHERE `dipTime` > ? AND `dipTime` < ?', [start, finish], function(err, tiePointRecords) {
         if(err){setTimeout(function(){self.sync()}, self.syncTimeout);}
         else{
           if(Object.prototype.toString.call(tiePointRecords) === '[object Array]'){
@@ -74,7 +74,7 @@ Transmitter.prototype.extract = function(scopeId, period){
             });
           }
           else if(finish < moment().format()){
-            self.extract(scopeId, finish);
+            setTimeout(function(){self.extract(scopeId, finish)}, 500);
           }
           else {
             //already up to date
@@ -94,6 +94,8 @@ Transmitter.prototype.sync = function(data){
   //   setTimeout(function(){self.sync(data)}, 7000);
   //   return 0;
   // }
+
+  console.log('[SYNC]', moment().format());
 
   axios.get(self.host + 'api/production/paverIndex/?deviceId=' + self.deviceId, {}).then(function(response){
     self.extract(response.data.id, response.data.updatedAt);
