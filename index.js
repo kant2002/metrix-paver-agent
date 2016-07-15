@@ -25,7 +25,7 @@ var signalPin = {
 }
 
 
-const WHEEL_R = 0.0022765;
+const WHEEL_R = 0.0024745;
 var transmitter;
 var positionFault = true;
 var gearTimeout;
@@ -231,7 +231,7 @@ function initialize(){
       muteSignal('dowelDip');
       dowelRecord.finishTime = moment().utc().format();
       redisCli.get('dist', function(err, reply){
-        dowelRecord.distance = Math.round((Math.abs(parseInt(reply)*WHEEL_R, )*100))/100;
+        dowelRecord.distance = Math.round((Math.abs(parseInt(reply)*WHEEL_R)*100))/100;
         if(dowelRecord.distance > 1){
           DB.query('INSERT INTO setPoint SET ?', dowelRecord, function(err, rows){
             if(err){
@@ -292,7 +292,7 @@ function initialize(){
       muteSignal('tieDip');
       setTimeout(tieCheck, 11000);
       redisCli.get('tiedist', function(err, reply){
-        tieRecord.distance = Math.round((Math.abs(parseInt(reply)*WHEEL_R, )*100))/100;
+        tieRecord.distance = Math.round((Math.abs(parseInt(reply)*WHEEL_R)*100))/100;
         if(tieRecord.distance > 0.2){
           DB.query('INSERT INTO tiePoint SET ?', tieRecord, function(err, rows){
             if(err){
