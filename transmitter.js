@@ -41,7 +41,7 @@ Transmitter.prototype.extract = function(scopeId, period){
         setPoints = setPointRecords.map(function(point){
           point.scopeId = scopeId;
           point.startTime = point.startTime ? moment(point.startTime).utc().add(6, 'hour').format() : null;
-          point.finishTime = point.startTime ? moment(point.finishTime).utc().add(6, 'hour').format() : null;
+          point.finishTime = point.finishTime ? moment(point.finishTime).utc().add(6, 'hour').format() : null;
           delete point.id;
           return point;
         });
@@ -61,7 +61,6 @@ Transmitter.prototype.extract = function(scopeId, period){
               return point;
             });
           }
-
           if(setPoints.length || tiePoints.length){
             var spTime = (setPoints[setPoints.length-1]) ? setPoints[setPoints.length-1].finishTime : null;
             var tpTime = (tiePoints[tiePoints.length-1]) ? tiePoints[tiePoints.length-1].dipTime : null;
